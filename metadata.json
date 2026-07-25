@@ -1,0 +1,6 @@
+{
+  "name": "OmniBazaar",
+  "description": "Global Online Marketplace & Direct Trade Platform for buying, selling, and trading items worldwide.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
