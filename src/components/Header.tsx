@@ -11,7 +11,8 @@ import {
   MapPin, 
   Package, 
   LogOut,
-  ChevronDown
+  ChevronDown,
+  Database
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -24,6 +25,8 @@ interface HeaderProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   onLogout: () => void;
+  onOpenSupabaseStatus?: () => void;
+  supabaseConnected?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -35,7 +38,9 @@ export const Header: React.FC<HeaderProps> = ({
   unreadCount,
   searchQuery,
   setSearchQuery,
-  onLogout
+  onLogout,
+  onOpenSupabaseStatus,
+  supabaseConnected = true,
 }) => {
   const [showUserMenu, setShowUserMenu] = React.useState(false);
 
@@ -125,6 +130,21 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Supabase Status Pill Button */}
+            {onOpenSupabaseStatus && (
+              <button
+                onClick={onOpenSupabaseStatus}
+                className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 bg-[#002B20] hover:bg-[#00382B] border border-[#10B981]/40 text-[#10B981] rounded-full text-xs font-bold transition-all shadow-sm"
+                title="Supabase Backend Details"
+              >
+                <div className="relative flex items-center justify-center">
+                  <Database className="w-3.5 h-3.5" />
+                  <span className={`absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full ${supabaseConnected ? 'bg-[#10B981] animate-pulse' : 'bg-[#EF4444]'}`} />
+                </div>
+                <span>Supabase</span>
+              </button>
+            )}
+
             {/* Create Product Button */}
             <button
               onClick={() => {

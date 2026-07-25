@@ -13,7 +13,8 @@ import {
   getProducts, 
   getTradeOffers, 
   getMessages, 
-  markMessagesReadForUser 
+  markMessagesReadForUser,
+  syncWithSupabase
 } from './utils/storage';
 
 import { Header } from './components/Header';
@@ -26,6 +27,7 @@ import { AuthModal } from './components/AuthModal';
 import { MessagesInbox } from './components/MessagesInbox';
 import { UserProfileModal } from './components/UserProfileModal';
 import { TradeHubView } from './components/TradeHubView';
+import { SupabaseStatusModal } from './components/SupabaseStatusModal';
 
 import { 
   Store, 
@@ -60,6 +62,20 @@ export default function App() {
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
   const [tradeTargetProduct, setTradeTargetProduct] = useState<Product | null>(null);
 
+  // Supabase State
+  const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
+  const [supabaseSyncState, setSupabaseSyncState] = useState<{
+    connected: boolean;
+    syncing: boolean;
+    lastSynced: string | null;
+    counts?: { users: number; products: number; offers: number; messages: number };
+    error?: string;
+  }>({
+    connected: true,
+    syncing: false,
+    lastSynced: null,
+  });
+
   // Refresh all state from localStorage
   const refreshAppData = () => {
     const user = getCurrentUser();
@@ -69,8 +85,22 @@ export default function App() {
     setMessages(getMessages());
   };
 
+  const handleTriggerSupabaseSync = async () => {
+    setSupabaseSyncState(prev => ({ ...prev, syncing: true }));
+    const result = await syncWithSupabase();
+    setSupabaseSyncState({
+      connected: result.connected,
+      syncing: false,
+      lastSynced: new Date().toISOString(),
+      counts: result.syncedCounts,
+      error: result.error,
+    });
+    refreshAppData();
+  };
+
   useEffect(() => {
     refreshAppData();
+    handleTriggerSupabaseSync();
   }, []);
 
   const handleLogout = () => {
@@ -142,6 +172,8 @@ export default function App() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onLogout={handleLogout}
+        onOpenSupabaseStatus={() => setIsSupabaseModalOpen(true)}
+        supabaseConnected={supabaseSyncState.connected}
       />
 
       {/* Main View Router */}
@@ -461,6 +493,13 @@ export default function App() {
           }}
         />
       )}
+
+      <SupabaseStatusModal
+        isOpen={isSupabaseModalOpen}
+        onClose={() => setIsSupabaseModalOpen(false)}
+        syncState={supabaseSyncState}
+        onTriggerSync={handleTriggerSupabaseSync}
+      />
 
     </div>
   );

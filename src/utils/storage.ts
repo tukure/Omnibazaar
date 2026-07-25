@@ -1,5 +1,6 @@
 import { User, Product, TradeOffer, Message, LocationInfo } from '../types';
 import { INITIAL_USERS, INITIAL_PRODUCTS, INITIAL_OFFERS, INITIAL_MESSAGES } from '../data/mockData';
+import { SupabaseService } from '../services/supabaseService';
 
 const STORAGE_KEYS = {
   USERS: 'omnibazaar_users',
@@ -25,6 +26,69 @@ export function initStorage(): void {
   }
   if (!localStorage.getItem(STORAGE_KEYS.MESSAGES)) {
     localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(INITIAL_MESSAGES));
+  }
+}
+
+// Full bidirectional sync with Supabase
+export async function syncWithSupabase(): Promise<{
+  connected: boolean;
+  syncedCounts?: { users: number; products: number; offers: number; messages: number };
+  error?: string;
+}> {
+  try {
+    initStorage();
+    
+    // Check connection first
+    const isConnected = await SupabaseService.checkConnection();
+    if (!isConnected) {
+      return { connected: false, error: 'Could not connect to Supabase database. Check table schema or RLS policies.' };
+    }
+
+    // Try seed initial mock data to Supabase if tables are newly created
+    await SupabaseService.seedInitialDataIfNeeded();
+
+    // Fetch remote records from Supabase
+    const remoteUsers = await SupabaseService.fetchUsers();
+    const remoteProducts = await SupabaseService.fetchProducts();
+    const remoteOffers = await SupabaseService.fetchTradeOffers();
+    const remoteMessages = await SupabaseService.fetchMessages();
+
+    // Merge or update local storage with Supabase remote state
+    if (remoteUsers && remoteUsers.length > 0) {
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(remoteUsers));
+    }
+    if (remoteProducts && remoteProducts.length > 0) {
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(remoteProducts));
+    }
+    if (remoteOffers && remoteOffers.length > 0) {
+      localStorage.setItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(remoteOffers));
+    }
+    if (remoteMessages && remoteMessages.length > 0) {
+      localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(remoteMessages));
+    }
+
+    // Sync any local users or products that might not be in Supabase yet
+    const localUsers = getUsers();
+    for (const u of localUsers) {
+      SupabaseService.saveUser(u);
+    }
+
+    const localProducts = getProducts();
+    for (const p of localProducts) {
+      SupabaseService.saveProduct(p);
+    }
+
+    return {
+      connected: true,
+      syncedCounts: {
+        users: remoteUsers?.length || localUsers.length,
+        products: remoteProducts?.length || localProducts.length,
+        offers: remoteOffers?.length || getTradeOffers().length,
+        messages: remoteMessages?.length || getMessages().length,
+      }
+    };
+  } catch (err: any) {
+    return { connected: false, error: err?.message || 'Supabase sync failed' };
   }
 }
 
@@ -78,6 +142,9 @@ export function registerUser(newUserParams: {
   localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
   setCurrentUser(newUser);
 
+  // Sync to Supabase
+  SupabaseService.saveUser(newUser);
+
   return { success: true, user: newUser };
 }
 
@@ -109,6 +176,10 @@ export function updateUserProfile(userId: string, updatedLocation: LocationInfo,
     if (curr && curr.id === userId) {
       setCurrentUser(users[idx]);
     }
+
+    // Sync to Supabase
+    SupabaseService.saveUser(users[idx]);
+
     return users[idx];
   }
   return null;
@@ -149,12 +220,19 @@ export function addProduct(productData: Omit<Product, 'id' | 'createdAt' | 'view
 
   products.unshift(newProduct);
   localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+
+  // Sync to Supabase
+  SupabaseService.saveProduct(newProduct);
+
   return newProduct;
 }
 
 export function deleteProduct(productId: string): void {
   const products = getProducts().filter(p => p.id !== productId);
   localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+
+  // Sync to Supabase
+  SupabaseService.deleteProduct(productId);
 }
 
 // TRADE OFFERS
@@ -175,6 +253,9 @@ export function createTradeOffer(offer: Omit<TradeOffer, 'id' | 'createdAt' | 's
 
   offers.unshift(newOffer);
   localStorage.setItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(offers));
+
+  // Sync to Supabase
+  SupabaseService.saveTradeOffer(newOffer);
 
   // Auto-send a message in inbox
   const cashText = newOffer.cashTopUp > 0 
@@ -206,6 +287,9 @@ export function updateTradeOfferStatus(offerId: string, status: 'accepted' | 'de
 
     const offer = offers[idx];
     
+    // Sync to Supabase
+    SupabaseService.saveTradeOffer(offer);
+
     // Send system message
     const statusText = status === 'accepted' 
       ? '🎉 TRADE ACCEPTED! Both parties have agreed to exchange items.' 
@@ -231,11 +315,13 @@ export function updateTradeOfferStatus(offerId: string, status: 'accepted' | 'de
       const targetProdIdx = products.findIndex(p => p.id === offer.targetProductId);
       if (targetProdIdx !== -1) {
         products[targetProdIdx].isTraded = true;
+        SupabaseService.saveProduct(products[targetProdIdx]);
       }
       if (offer.offeredItem.existingProductId) {
         const offProdIdx = products.findIndex(p => p.id === offer.offeredItem.existingProductId);
         if (offProdIdx !== -1) {
           products[offProdIdx].isTraded = true;
+          SupabaseService.saveProduct(products[offProdIdx]);
         }
       }
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
@@ -261,6 +347,10 @@ export function sendMessage(msg: Omit<Message, 'id' | 'createdAt' | 'read'>): Me
 
   messages.push(newMessage);
   localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
+
+  // Sync to Supabase
+  SupabaseService.saveMessage(newMessage);
+
   return newMessage;
 }
 
@@ -275,5 +365,6 @@ export function markMessagesReadForUser(userId: string): void {
   });
   if (updated) {
     localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
+    SupabaseService.markMessagesRead(userId);
   }
 }
