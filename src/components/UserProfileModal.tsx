@@ -71,6 +71,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             src={currentUser.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250'}
             alt={currentUser.username}
             className="w-20 h-20 rounded-full object-cover border-2 border-[#3A506B] shadow-md"
+            referrerPolicy="no-referrer"
           />
           <div>
             <div className="flex items-center gap-2">

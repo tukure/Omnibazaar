@@ -27,6 +27,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           alt={product.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
           loading="lazy"
+          referrerPolicy="no-referrer"
         />
 
         {/* Listing Type Badge */}
