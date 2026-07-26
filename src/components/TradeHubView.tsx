@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Product, User } from '../types';
-import logoImg from '../assets/images/omnibazaar_logo_1784789812369.jpg';
+import { LogoImage } from './LogoImage';
 import { ProductCard } from './ProductCard';
 import { Repeat, Sparkles, Filter, MapPin, Search } from 'lucide-react';
 
@@ -69,11 +69,9 @@ export const TradeHubView: React.FC<TradeHubViewProps> = ({
         {/* OmniBazaar Logo Badge */}
         <div className="relative z-10 shrink-0 self-center md:self-auto">
           <div className="w-36 h-28 bg-white rounded-2xl overflow-hidden border border-[#3A506B] flex flex-col items-center justify-center shadow-lg hover:scale-105 transition-transform">
-            <img 
-              src={logoImg} 
+            <LogoImage 
               alt="OmniBazaar Trading Network" 
               className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
             />
           </div>
         </div>

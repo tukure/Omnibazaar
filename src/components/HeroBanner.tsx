@@ -1,6 +1,6 @@
 import React from 'react';
 import { Repeat, ShieldCheck, Globe, Zap, ArrowRight, Sparkles } from 'lucide-react';
-import logoImg from '../assets/images/omnibazaar_logo_1784789812369.jpg';
+import { LogoImage } from './LogoImage';
 
 interface HeroBannerProps {
   onOpenCreateProduct: () => void;
@@ -36,12 +36,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           <div className="lg:col-span-7">
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-[#182533] border border-[#2D4158] text-[#93ACCC] rounded-full text-xs font-bold mb-4 animate-in fade-in slide-in-from-bottom-2 shadow-sm">
               <div className="w-5 h-5 rounded-full bg-white p-0.5 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden">
-                <img 
-                  src={logoImg} 
-                  alt="OmniBazaar Logo" 
-                  className="w-full h-full object-contain"
-                  referrerPolicy="no-referrer"
-                />
+                <LogoImage alt="OmniBazaar Logo" className="w-full h-full object-contain" />
               </div>
               <span className="uppercase tracking-widest text-[10px] text-white">OmniBazaar P2P Barter & Direct Trading Network</span>
             </div>
@@ -77,36 +72,21 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <div className="mt-8 flex flex-wrap items-center gap-6 text-xs font-semibold text-[#666666]">
               <div className="flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-md bg-white p-0.5 border border-[#444444] flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
-                  <img 
-                    src={logoImg} 
-                    alt="OmniBazaar Logo" 
-                    className="w-full h-full object-contain"
-                    referrerPolicy="no-referrer"
-                  />
+                  <LogoImage alt="OmniBazaar Logo" className="w-full h-full object-contain" />
                 </div>
                 <span className="text-[#888888]">Global & Regional Regions</span>
               </div>
 
               <div className="flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-md bg-white p-0.5 border border-[#444444] flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
-                  <img 
-                    src={logoImg} 
-                    alt="OmniBazaar Logo" 
-                    className="w-full h-full object-contain"
-                    referrerPolicy="no-referrer"
-                  />
+                  <LogoImage alt="OmniBazaar Logo" className="w-full h-full object-contain" />
                 </div>
                 <span className="text-[#888888]">End-to-End Encrypted Trades</span>
               </div>
 
               <div className="flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-md bg-white p-0.5 border border-[#444444] flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
-                  <img 
-                    src={logoImg} 
-                    alt="OmniBazaar Logo" 
-                    className="w-full h-full object-contain"
-                    referrerPolicy="no-referrer"
-                  />
+                  <LogoImage alt="OmniBazaar Logo" className="w-full h-full object-contain" />
                 </div>
                 <span className="text-[#888888]">Instant Product Vault</span>
               </div>
@@ -131,13 +111,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               </div>
 
               {/* Logo Presentation Frame */}
-              <div className="w-full h-52 rounded-2xl overflow-hidden bg-white my-2 shadow-md group-hover:scale-[1.02] transition-transform duration-300 flex items-center justify-center">
-                <img 
-                  src={logoImg} 
-                  alt="OmniBazaar Official Network Logo" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
+              <div className="w-full h-52 rounded-2xl overflow-hidden bg-white my-2 shadow-md group-hover:scale-[1.02] transition-transform duration-300 flex items-center justify-center border border-[#3A506B]">
+                <LogoImage alt="OmniBazaar Official Network Logo" className="w-full h-full object-cover" />
               </div>
 
               <div className="mt-4 space-y-2 text-center">

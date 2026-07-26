@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, ActiveTab } from '../types';
 import logoImg from '../assets/images/omnibazaar_logo_1784789812369.jpg';
+import { LogoImage } from './LogoImage';
 import { 
   Store, 
   Repeat, 
@@ -56,12 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
               className="flex items-center gap-2.5 text-left group"
             >
               <div className="w-10 h-10 rounded-xl bg-white p-0.5 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden shadow-md group-hover:scale-105 transition-transform">
-                <img 
-                  src={logoImg} 
-                  alt="OmniBazaar Logo" 
-                  className="w-full h-full object-contain rounded-lg"
-                  referrerPolicy="no-referrer"
-                />
+                <LogoImage alt="OmniBazaar Logo" className="w-full h-full object-contain rounded-lg" />
               </div>
               <div>
                 <span className="text-xl font-bold tracking-tight text-white flex items-center font-sans">
