@@ -9,7 +9,7 @@ interface LogoImageProps {
 
 export const LogoImage: React.FC<LogoImageProps> = ({
   alt = 'OmniBazaar Logo',
-  className = 'w-full h-full object-cover',
+  className = 'w-full h-full object-contain',
 }) => {
   const [imgSrc, setImgSrc] = useState<string>(OMNIBAZAAR_LOGO_BASE64);
 

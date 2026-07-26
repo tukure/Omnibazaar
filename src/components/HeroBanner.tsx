@@ -111,8 +111,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               </div>
 
               {/* Logo Presentation Frame */}
-              <div className="w-full h-52 rounded-2xl overflow-hidden bg-[#0F172A] my-2 shadow-xl group-hover:scale-[1.02] transition-transform duration-300 flex items-center justify-center border border-[#3A506B] relative">
-                <LogoImage alt="OmniBazaar Official Network Logo" className="w-full h-full object-cover" />
+              <div className="w-full h-52 rounded-2xl overflow-hidden bg-[#0F172A] my-2 shadow-xl group-hover:scale-[1.02] transition-transform duration-300 flex items-center justify-center border border-[#3A506B] relative p-4">
+                <LogoImage alt="OmniBazaar Official Network Logo" className="w-full h-full object-contain" />
               </div>
 
               <div className="mt-4 space-y-2 text-center">
