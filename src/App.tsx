@@ -424,8 +424,8 @@ export default function App() {
       <footer className="bg-[#0D0D0D] border-t border-[#222222] py-8 text-center text-xs text-[#555555]">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-md bg-white p-0.5 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden">
-              <LogoImage alt="OmniBazaar Logo" className="w-full h-full object-contain" />
+            <div className="w-6 h-6 rounded-md bg-[#0F172A] p-0.5 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden">
+              <LogoImage alt="OmniBazaar Logo" className="w-full h-full" />
             </div>
             <span className="font-bold text-white tracking-wider uppercase text-[10px]">OmniBazaar</span>
             <span>— Global Direct Trade & Marketplace</span>

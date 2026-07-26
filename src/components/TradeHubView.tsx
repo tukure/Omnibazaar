@@ -68,7 +68,7 @@ export const TradeHubView: React.FC<TradeHubViewProps> = ({
 
         {/* OmniBazaar Logo Badge */}
         <div className="relative z-10 shrink-0 self-center md:self-auto">
-          <div className="w-36 h-28 bg-white rounded-2xl overflow-hidden border border-[#3A506B] flex flex-col items-center justify-center shadow-lg hover:scale-105 transition-transform">
+          <div className="w-36 h-28 bg-[#0F172A] rounded-2xl overflow-hidden border border-[#3A506B] flex items-center justify-center shadow-lg hover:scale-105 transition-transform">
             <LogoImage 
               alt="OmniBazaar Trading Network" 
               className="w-full h-full object-cover"

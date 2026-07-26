@@ -56,8 +56,8 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => setActiveTab('explore')}
               className="flex items-center gap-2.5 text-left group"
             >
-              <div className="w-10 h-10 rounded-xl bg-white p-0.5 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden shadow-md group-hover:scale-105 transition-transform">
-                <LogoImage alt="OmniBazaar Logo" className="w-full h-full object-contain rounded-lg" />
+              <div className="w-10 h-10 rounded-xl bg-[#0F172A] p-1 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden shadow-md group-hover:scale-105 transition-transform">
+                <LogoImage alt="OmniBazaar Logo" className="w-full h-full" />
               </div>
               <div>
                 <span className="text-xl font-bold tracking-tight text-white flex items-center font-sans">
