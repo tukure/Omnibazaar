@@ -1,6 +1,5 @@
 import React from 'react';
 import { Repeat, ShieldCheck, Globe, Zap, ArrowRight, Sparkles } from 'lucide-react';
-import { LogoImage } from './LogoImage';
 
 interface HeroBannerProps {
   onOpenCreateProduct: () => void;
@@ -35,9 +34,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           {/* Left Column: Headline & Action */}
           <div className="lg:col-span-7">
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-[#182533] border border-[#2D4158] text-[#93ACCC] rounded-full text-xs font-bold mb-4 animate-in fade-in slide-in-from-bottom-2 shadow-sm">
-              <div className="w-5 h-5 rounded-full bg-[#0F172A] p-0.5 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden">
-                <LogoImage alt="OmniBazaar Logo" className="w-full h-full" />
-              </div>
+              <Sparkles className="w-3.5 h-3.5 text-[#38BDF8]" />
               <span className="uppercase tracking-widest text-[10px] text-white">OmniBazaar P2P Barter & Direct Trading Network</span>
             </div>
 
@@ -110,15 +107,17 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 </span>
               </div>
 
-              {/* Logo Presentation Frame */}
+              {/* Network Feature Card */}
               <div className="w-full h-52 rounded-2xl overflow-hidden bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] my-2 shadow-xl group-hover:scale-[1.02] transition-transform duration-300 flex flex-col items-center justify-center border border-[#3A506B] relative p-6">
-                <LogoImage className="w-20 h-20 mb-3" />
+                <div className="w-14 h-14 rounded-2xl bg-[#1E293B] border border-[#38BDF8]/30 flex items-center justify-center mb-3 shadow-inner">
+                  <Repeat className="w-7 h-7 text-[#38BDF8]" />
+                </div>
                 <div className="text-center">
-                  <span className="text-2xl font-black text-white tracking-tight font-sans">
+                  <span className="text-3xl font-black text-white tracking-tight font-sans">
                     Omni<span className="text-[#38BDF8]">Bazaar</span>
                   </span>
-                  <p className="text-[10px] font-bold text-[#93ACCC] tracking-widest uppercase mt-0.5">
-                    Peer-to-Peer Trading Network
+                  <p className="text-[10px] font-bold text-[#93ACCC] tracking-widest uppercase mt-1">
+                    Peer-to-Peer Trading Protocol
                   </p>
                 </div>
               </div>
