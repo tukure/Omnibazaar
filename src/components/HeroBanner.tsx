@@ -68,27 +68,27 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               </a>
             </div>
 
-            {/* Value Props Pills with OmniBazaar Logo */}
+            {/* Value Props Pills with Feature Icons */}
             <div className="mt-8 flex flex-wrap items-center gap-6 text-xs font-semibold text-[#666666]">
               <div className="flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-md bg-[#0F172A] p-0.5 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
-                  <LogoImage alt="OmniBazaar Logo" className="w-full h-full" />
+                <div className="w-6 h-6 rounded-md bg-[#182533] border border-[#2D4158] flex items-center justify-center shrink-0 shadow-sm">
+                  <Globe className="w-3.5 h-3.5 text-[#38BDF8]" />
                 </div>
-                <span className="text-[#888888]">Global & Regional Regions</span>
+                <span className="text-[#A0AEC0]">Global & Regional Trading</span>
               </div>
 
               <div className="flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-md bg-[#0F172A] p-0.5 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
-                  <LogoImage alt="OmniBazaar Logo" className="w-full h-full" />
+                <div className="w-6 h-6 rounded-md bg-[#182533] border border-[#2D4158] flex items-center justify-center shrink-0 shadow-sm">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#34D399]" />
                 </div>
-                <span className="text-[#888888]">End-to-End Encrypted Trades</span>
+                <span className="text-[#A0AEC0]">End-to-End Encrypted Swaps</span>
               </div>
 
               <div className="flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded-md bg-[#0F172A] p-0.5 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden shadow-sm">
-                  <LogoImage alt="OmniBazaar Logo" className="w-full h-full" />
+                <div className="w-6 h-6 rounded-md bg-[#182533] border border-[#2D4158] flex items-center justify-center shrink-0 shadow-sm">
+                  <Zap className="w-3.5 h-3.5 text-[#818CF8]" />
                 </div>
-                <span className="text-[#888888]">Instant Product Vault</span>
+                <span className="text-[#A0AEC0]">Instant Product Vault</span>
               </div>
             </div>
           </div>
@@ -98,7 +98,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             <div className="bg-[#121212] border border-[#2A2A2A] rounded-3xl p-6 shadow-2xl relative overflow-hidden group hover:border-[#444444] transition-all">
               
               {/* Decorative Subtle Ambient Glow */}
-              <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -top-12 -right-12 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
 
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-[#222222]">
                 <div className="flex items-center gap-2">
@@ -111,8 +111,16 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
               </div>
 
               {/* Logo Presentation Frame */}
-              <div className="w-full h-52 rounded-2xl overflow-hidden bg-[#0F172A] my-2 shadow-xl group-hover:scale-[1.02] transition-transform duration-300 flex items-center justify-center border border-[#3A506B] relative p-4">
-                <LogoImage alt="OmniBazaar Official Network Logo" className="w-full h-full object-contain" />
+              <div className="w-full h-52 rounded-2xl overflow-hidden bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] my-2 shadow-xl group-hover:scale-[1.02] transition-transform duration-300 flex flex-col items-center justify-center border border-[#3A506B] relative p-6">
+                <LogoImage className="w-20 h-20 mb-3" />
+                <div className="text-center">
+                  <span className="text-2xl font-black text-white tracking-tight font-sans">
+                    Omni<span className="text-[#38BDF8]">Bazaar</span>
+                  </span>
+                  <p className="text-[10px] font-bold text-[#93ACCC] tracking-widest uppercase mt-0.5">
+                    Peer-to-Peer Trading Network
+                  </p>
+                </div>
               </div>
 
               <div className="mt-4 space-y-2 text-center">
