@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { OMNIBAZAAR_LOGO_BASE64 } from '../assets/logoBase64';
 import logoImg from '../assets/images/omnibazaar_logo_1784789812369.jpg';
 import { Store } from 'lucide-react';
 
@@ -11,15 +12,15 @@ export const LogoImage: React.FC<LogoImageProps> = ({
   alt = 'OmniBazaar Logo',
   className = 'w-full h-full object-contain',
 }) => {
-  const [imgSrc, setImgSrc] = useState<string>(logoImg);
+  const [imgSrc, setImgSrc] = useState<string>(OMNIBAZAAR_LOGO_BASE64);
   const [hasError, setHasError] = useState<boolean>(false);
 
   const handleError = () => {
-    if (imgSrc !== '/omnibazaar_logo.jpg') {
-      // Fallback to static public folder copy if bundled path has issue
+    if (imgSrc === OMNIBAZAAR_LOGO_BASE64) {
+      setImgSrc(logoImg);
+    } else if (imgSrc !== '/omnibazaar_logo.jpg') {
       setImgSrc('/omnibazaar_logo.jpg');
     } else {
-      // If image fails to load, render clean SVG logo fallback
       setHasError(true);
     }
   };

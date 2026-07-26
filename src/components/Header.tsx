@@ -1,6 +1,6 @@
 import React from 'react';
 import { User, ActiveTab } from '../types';
-import logoImg from '../assets/images/omnibazaar_logo_1784789812369.jpg';
+import { OMNIBAZAAR_LOGO_BASE64 } from '../assets/logoBase64';
 import { LogoImage } from './LogoImage';
 import { 
   Store, 
@@ -182,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="flex items-center gap-2 p-1.5 pl-2.5 rounded-full border border-[#333333] bg-[#1A1A1A] hover:border-slate-400 transition-all"
                 >
                   <img
-                    src={currentUser.avatarUrl || logoImg}
+                    src={currentUser.avatarUrl || OMNIBAZAAR_LOGO_BASE64}
                     alt={currentUser.username}
                     className="w-7 h-7 rounded-full object-cover bg-white p-0.5 border border-[#444444] shrink-0"
                     referrerPolicy="no-referrer"
