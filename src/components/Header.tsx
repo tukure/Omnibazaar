@@ -1,5 +1,7 @@
 import React from 'react';
 import { User, ActiveTab } from '../types';
+import { OMNIBAZAAR_LOGO_BASE64 } from '../assets/logoBase64';
+import { LogoImage } from './LogoImage';
 import { 
   Store, 
   Repeat, 
@@ -54,6 +56,9 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => setActiveTab('explore')}
               className="flex items-center gap-2.5 text-left group"
             >
+              <div className="w-10 h-10 rounded-xl bg-[#0F172A] p-1 border border-[#3A506B] flex items-center justify-center shrink-0 overflow-hidden shadow-md group-hover:scale-105 transition-transform">
+                <LogoImage alt="OmniBazaar Logo" className="w-full h-full" />
+              </div>
               <div>
                 <span className="text-2xl font-black tracking-tight text-white flex items-center font-sans">
                   <span className="text-white">Omni</span>
@@ -177,7 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
                   className="flex items-center gap-2 p-1.5 pl-2.5 rounded-full border border-[#333333] bg-[#1A1A1A] hover:border-slate-400 transition-all"
                 >
                   <img
-                    src={currentUser.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=250'}
+                    src={currentUser.avatarUrl || OMNIBAZAAR_LOGO_BASE64}
                     alt={currentUser.username}
                     className="w-7 h-7 rounded-full object-cover bg-white p-0.5 border border-[#444444] shrink-0"
                     referrerPolicy="no-referrer"

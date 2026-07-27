@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Product, User } from '../types';
+import { LogoImage } from './LogoImage';
 import { ProductCard } from './ProductCard';
 import { Repeat, Sparkles, Filter, MapPin, Search } from 'lucide-react';
 
@@ -65,14 +66,12 @@ export const TradeHubView: React.FC<TradeHubViewProps> = ({
           </button>
         </div>
 
-        {/* Trade Badge */}
+        {/* OmniBazaar Logo Badge */}
         <div className="relative z-10 shrink-0 self-center md:self-auto hidden sm:block">
-          <div className="px-5 py-4 bg-[#182533] rounded-2xl border border-[#2D4158] flex flex-col items-center justify-center shadow-lg text-center">
-            <span className="text-2xl font-black tracking-wider text-white uppercase">
+          <div className="w-36 h-28 bg-[#0F172A] p-3 rounded-2xl overflow-hidden border border-[#3A506B] flex flex-col items-center justify-center shadow-lg hover:scale-105 transition-transform gap-1.5">
+            <LogoImage className="w-12 h-12" />
+            <span className="text-[11px] font-black tracking-wider text-white uppercase">
               Omni<span className="text-[#38BDF8]">Bazaar</span>
-            </span>
-            <span className="text-[10px] font-bold text-[#93ACCC] uppercase tracking-widest mt-1">
-              Barter Hub
             </span>
           </div>
         </div>

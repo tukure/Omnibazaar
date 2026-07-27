@@ -1,5 +1,6 @@
 import React from 'react';
 import { Repeat, ShieldCheck, Globe, Zap, ArrowRight, Sparkles } from 'lucide-react';
+import { LogoImage } from './LogoImage';
 
 interface HeroBannerProps {
   onOpenCreateProduct: () => void;
@@ -109,14 +110,12 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
               {/* Network Feature Card */}
               <div className="w-full h-52 rounded-2xl overflow-hidden bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] my-2 shadow-xl group-hover:scale-[1.02] transition-transform duration-300 flex flex-col items-center justify-center border border-[#3A506B] relative p-6">
-                <div className="w-14 h-14 rounded-2xl bg-[#1E293B] border border-[#38BDF8]/30 flex items-center justify-center mb-3 shadow-inner">
-                  <Repeat className="w-7 h-7 text-[#38BDF8]" />
-                </div>
+                <LogoImage className="w-16 h-16 mb-2" />
                 <div className="text-center">
-                  <span className="text-3xl font-black text-white tracking-tight font-sans">
+                  <span className="text-2xl font-black text-white tracking-tight font-sans">
                     Omni<span className="text-[#38BDF8]">Bazaar</span>
                   </span>
-                  <p className="text-[10px] font-bold text-[#93ACCC] tracking-widest uppercase mt-1">
+                  <p className="text-[10px] font-bold text-[#93ACCC] tracking-widest uppercase mt-0.5">
                     Peer-to-Peer Trading Protocol
                   </p>
                 </div>
