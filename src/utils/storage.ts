@@ -58,7 +58,20 @@ export async function syncWithSupabase(): Promise<{
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(remoteUsers));
     }
     if (remoteProducts && remoteProducts.length > 0) {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(remoteProducts));
+      const remoteIds = new Set(remoteProducts.map(p => p.id));
+      const missingInitial = INITIAL_PRODUCTS.filter(p => !remoteIds.has(p.id));
+      const mergedProducts = [...remoteProducts, ...missingInitial];
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(mergedProducts));
+      
+      // Upload any missing initial products to Supabase
+      for (const p of missingInitial) {
+        SupabaseService.saveProduct(p);
+      }
+    } else {
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
+      for (const p of INITIAL_PRODUCTS) {
+        SupabaseService.saveProduct(p);
+      }
     }
     if (remoteOffers && remoteOffers.length > 0) {
       localStorage.setItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(remoteOffers));
@@ -199,6 +212,9 @@ export function getProducts(): Product[] {
     if (missingInitial.length > 0) {
       const merged = [...existingProducts, ...missingInitial];
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(merged));
+      for (const p of missingInitial) {
+        SupabaseService.saveProduct(p);
+      }
       return merged;
     }
     return existingProducts;

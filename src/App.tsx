@@ -190,6 +190,7 @@ export default function App() {
               }}
               onSelectCategory={setSelectedCategory}
               selectedCategory={selectedCategory}
+              onNavigateToFree={() => setActiveTab('free')}
             />
 
             {/* Marketplace Grid Container */}

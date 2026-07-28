@@ -1,11 +1,12 @@
 import React from 'react';
-import { Repeat, ShieldCheck, Globe, Zap, ArrowRight, Sparkles } from 'lucide-react';
+import { Repeat, ShieldCheck, Globe, Zap, ArrowRight, Sparkles, Gift } from 'lucide-react';
 import { LogoImage } from './LogoImage';
 
 interface HeroBannerProps {
   onOpenCreateProduct: () => void;
   onSelectCategory: (category: string) => void;
   selectedCategory: string;
+  onNavigateToFree?: () => void;
 }
 
 const CATEGORIES = [
@@ -23,7 +24,8 @@ const CATEGORIES = [
 export const HeroBanner: React.FC<HeroBannerProps> = ({
   onOpenCreateProduct,
   onSelectCategory,
-  selectedCategory
+  selectedCategory,
+  onNavigateToFree
 }) => {
   return (
     <div className="bg-[#0D0D0D] border-b border-[#222222] py-8 md:py-12">
@@ -56,6 +58,16 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                 <Repeat className="w-4 h-4 text-[#93ACCC]" />
                 <span>+ Create Trade Listing</span>
               </button>
+
+              {onNavigateToFree && (
+                <button
+                  onClick={onNavigateToFree}
+                  className="px-6 py-3 bg-[#064E3B] hover:bg-[#047857] border border-[#10B981]/50 text-[#34D399] font-black rounded-full text-xs sm:text-sm transition-all flex items-center gap-2 hover:scale-[1.02] shadow-md"
+                >
+                  <Gift className="w-4.5 h-4.5 text-[#34D399]" />
+                  <span>🎁 Free Goods Hub ($0)</span>
+                </button>
+              )}
 
               <a
                 href="#marketplace-grid"

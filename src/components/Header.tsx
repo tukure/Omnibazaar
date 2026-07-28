@@ -284,6 +284,70 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Sub-Header Mobile/Desktop Navigation Bar */}
+      <div className="border-t border-[#1F1F1F] bg-[#0A0A0A] py-2 px-4 overflow-x-auto no-scrollbar">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 min-w-max">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setActiveTab('explore')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all whitespace-nowrap ${
+                activeTab === 'explore'
+                  ? 'bg-[#21303E] border border-[#3A506B] text-white font-bold shadow-sm'
+                  : 'text-[#888888] hover:text-white bg-[#141414] border border-[#222222]'
+              }`}
+            >
+              <Store className="w-3.5 h-3.5 text-[#93ACCC]" />
+              <span>Marketplace</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('trades')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all whitespace-nowrap ${
+                activeTab === 'trades'
+                  ? 'bg-[#21303E] border border-[#3A506B] text-white font-bold shadow-sm'
+                  : 'text-[#888888] hover:text-white bg-[#141414] border border-[#222222]'
+              }`}
+            >
+              <Repeat className="w-3.5 h-3.5 text-[#93ACCC]" />
+              <span>Trade Hub</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('free')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap ${
+                activeTab === 'free'
+                  ? 'bg-[#064E3B] border border-[#10B981]/60 text-[#34D399] font-black shadow-md'
+                  : 'bg-[#042F2E]/60 border border-[#10B981]/30 text-[#34D399] hover:bg-[#064E3B]'
+              }`}
+            >
+              <Gift className="w-3.5 h-3.5 text-[#34D399]" />
+              <span>Free Goods Hub</span>
+              <span className="px-1.5 py-0.5 bg-[#10B981]/30 text-[#34D399] text-[9px] font-black rounded-md">FREE</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('my-listings')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all whitespace-nowrap ${
+                activeTab === 'my-listings'
+                  ? 'bg-[#21303E] border border-[#3A506B] text-white font-bold shadow-sm'
+                  : 'text-[#888888] hover:text-white bg-[#141414] border border-[#222222]'
+              }`}
+            >
+              <Package className="w-3.5 h-3.5 text-[#93ACCC]" />
+              <span>Vault</span>
+            </button>
+          </div>
+
+          <button
+            onClick={() => setActiveTab('free')}
+            className="flex items-center gap-1.5 px-3 py-1 bg-[#064E3B]/40 border border-[#10B981]/30 rounded-full text-[11px] font-bold text-[#34D399] hover:bg-[#064E3B] transition-all"
+          >
+            <Gift className="w-3 h-3 text-[#34D399]" />
+            <span>🎁 100% Free Giveaways & Donations ($0)</span>
+          </button>
+        </div>
+      </div>
     </header>
   );
 };
