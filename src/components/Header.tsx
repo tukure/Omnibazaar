@@ -71,8 +71,8 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             </button>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-1 bg-[#151515] p-1 rounded-xl border border-[#222222]">
+            {/* Desktop / Tablet Navigation */}
+            <nav className="hidden md:flex items-center gap-1 bg-[#151515] p-1 rounded-xl border border-[#222222]">
               <button
                 onClick={() => setActiveTab('explore')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
@@ -99,15 +99,15 @@ export const Header: React.FC<HeaderProps> = ({
 
               <button
                 onClick={() => setActiveTab('free')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
                   activeTab === 'free'
-                    ? 'bg-[#064E3B] border border-[#10B981]/50 text-[#34D399] font-extrabold shadow-sm'
-                    : 'text-[#888888] hover:text-white'
+                    ? 'bg-[#064E3B] border border-[#10B981]/80 text-[#34D399] font-black shadow-md'
+                    : 'bg-[#064E3B]/40 text-[#34D399] hover:bg-[#064E3B] border border-[#10B981]/30'
                 }`}
               >
                 <Gift className="w-3.5 h-3.5 text-[#34D399]" />
-                <span>Free Hub</span>
-                <span className="px-1.5 py-0.5 bg-[#10B981]/20 text-[#34D399] text-[9px] font-black rounded-md">FREE</span>
+                <span>Free Goods</span>
+                <span className="px-1.5 py-0.5 bg-[#10B981] text-slate-950 text-[9px] font-black rounded-md">FREE</span>
               </button>
 
               <button
