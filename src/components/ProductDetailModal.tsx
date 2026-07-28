@@ -13,7 +13,8 @@ import {
   Eye, 
   User as UserIcon,
   CheckCircle2,
-  Send
+  Send,
+  Gift
 } from 'lucide-react';
 import { sendMessage } from '../utils/storage';
 
@@ -145,10 +146,19 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               </h2>
 
               <div className="mt-3 flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-white">
-                  ${product.price}
-                </span>
-                <span className="text-xs text-[#666666] font-semibold tracking-widest uppercase">USD</span>
+                {(product.listingType === 'Free / Donation' || product.price === 0) ? (
+                  <span className="text-2xl sm:text-3xl font-black text-[#34D399] tracking-tight flex items-center gap-2">
+                    <Gift className="w-6 h-6 text-[#34D399]" />
+                    FREE / DONATION
+                  </span>
+                ) : (
+                  <>
+                    <span className="text-3xl font-bold text-white">
+                      ${product.price}
+                    </span>
+                    <span className="text-xs text-[#666666] font-semibold tracking-widest uppercase">USD</span>
+                  </>
+                )}
               </div>
 
               {/* Description */}
@@ -189,6 +199,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   <p className="flex items-center gap-1.5 pl-5">
                     <span><strong className="text-white">Province / State:</strong> {product.location.province}</span>
                   </p>
+                  {product.location.city && (
+                    <p className="flex items-center gap-1.5 pl-5">
+                      <span><strong className="text-white">City:</strong> {product.location.city}</span>
+                    </p>
+                  )}
                   <p className="flex items-center gap-1.5 pl-5">
                     <span><strong className="text-white">Street Address:</strong> {product.location.address}</span>
                   </p>
@@ -207,8 +222,25 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 </div>
               ) : (
                 <>
+                  {/* Free Donation Claim Button */}
+                  {(product.listingType === 'Free / Donation' || product.price === 0) && !product.isSold && !product.isTraded && (
+                    <button
+                      onClick={() => {
+                        if (!currentUser) {
+                          onOpenAuth();
+                        } else {
+                          setQuickMessage(`Hello @${product.sellerUsername}, I would love to claim your free donation "${product.title}". Is it available for pickup?`);
+                        }
+                      }}
+                      className="w-full py-3 px-4 bg-[#064E3B] hover:bg-[#047857] border border-[#10B981]/50 text-[#34D399] font-black rounded-full transition-all text-xs sm:text-sm flex items-center justify-center gap-2 hover:scale-[1.01] shadow-lg"
+                    >
+                      <Gift className="w-4 h-4 text-[#34D399]" />
+                      <span>Request Free Item Pickup</span>
+                    </button>
+                  )}
+
                   {/* Trade Action */}
-                  {isTradeable && !product.isSold && !product.isTraded && (
+                  {isTradeable && product.listingType !== 'Free / Donation' && product.price > 0 && !product.isSold && !product.isTraded && (
                     <button
                       onClick={() => {
                         if (!currentUser) {

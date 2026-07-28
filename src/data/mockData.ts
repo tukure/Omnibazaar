@@ -9,6 +9,7 @@ export const INITIAL_USERS: User[] = [
     location: {
       country: 'Canada',
       province: 'Ontario',
+      city: 'Toronto',
       address: '450 Yonge Street, Apt 12B',
       postalCode: 'M5B 1T8'
     },
@@ -24,6 +25,7 @@ export const INITIAL_USERS: User[] = [
     location: {
       country: 'United States',
       province: 'California',
+      city: 'Los Angeles',
       address: '742 Evergreen Terrace',
       postalCode: '90210'
     },
@@ -39,6 +41,7 @@ export const INITIAL_USERS: User[] = [
     location: {
       country: 'United Kingdom',
       province: 'Greater London',
+      city: 'London',
       address: '221B Baker Street',
       postalCode: 'NW1 6XE'
     },
@@ -54,6 +57,7 @@ export const INITIAL_USERS: User[] = [
     location: {
       country: 'Germany',
       province: 'Bavaria',
+      city: 'Munich',
       address: 'Leopoldstraße 42',
       postalCode: '80802'
     },
@@ -78,6 +82,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: {
       country: 'Canada',
       province: 'Ontario',
+      city: 'Toronto',
       address: '450 Yonge Street, Apt 12B',
       postalCode: 'M5B 1T8'
     },
@@ -99,6 +104,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: {
       country: 'United States',
       province: 'California',
+      city: 'Los Angeles',
       address: '742 Evergreen Terrace',
       postalCode: '90210'
     },
@@ -120,6 +126,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: {
       country: 'United Kingdom',
       province: 'Greater London',
+      city: 'London',
       address: '221B Baker Street',
       postalCode: 'NW1 6XE'
     },
@@ -141,6 +148,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: {
       country: 'Germany',
       province: 'Bavaria',
+      city: 'Munich',
       address: 'Leopoldstraße 42',
       postalCode: '80802'
     },
@@ -162,6 +170,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: {
       country: 'Canada',
       province: 'Ontario',
+      city: 'Toronto',
       address: '450 Yonge Street, Apt 12B',
       postalCode: 'M5B 1T8'
     },
@@ -182,6 +191,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: {
       country: 'United States',
       province: 'California',
+      city: 'Los Angeles',
       address: '742 Evergreen Terrace',
       postalCode: '90210'
     },
@@ -202,6 +212,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: {
       country: 'Canada',
       province: 'Ontario',
+      city: 'Toronto',
       address: '450 Yonge Street, Apt 12B',
       postalCode: 'M5B 1T8'
     },
@@ -223,6 +234,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: {
       country: 'United States',
       province: 'California',
+      city: 'Los Angeles',
       address: '742 Evergreen Terrace',
       postalCode: '90210'
     },
@@ -244,6 +256,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: {
       country: 'Germany',
       province: 'Bavaria',
+      city: 'Munich',
       address: 'Leopoldstraße 42',
       postalCode: '80802'
     },
@@ -265,12 +278,105 @@ export const INITIAL_PRODUCTS: Product[] = [
     location: {
       country: 'United Kingdom',
       province: 'Greater London',
+      city: 'London',
       address: '221B Baker Street',
       postalCode: 'NW1 6XE'
     },
     createdAt: '2026-07-22T16:00:00Z',
     featured: true,
     viewsCount: 680
+  },
+  {
+    id: 'prod_11',
+    sellerId: 'user_1',
+    sellerUsername: 'Alex_Tech',
+    title: 'Free Solid Oak Vintage Bookshelf (Pickup Only)',
+    description: 'Donating a sturdy solid oak bookshelf in great condition. Moving out and hoping to pass it along to a neighbor or local reader in need!',
+    price: 0,
+    category: 'Home & Furniture',
+    condition: 'Good',
+    listingType: 'Free / Donation',
+    isFree: true,
+    imageUrl: 'https://images.unsplash.com/photo-1594631252845-29fc4cc86de5?auto=format&fit=crop&q=80&w=800',
+    location: {
+      country: 'Canada',
+      province: 'Ontario',
+      city: 'Toronto',
+      address: '450 Yonge Street, Apt 12B',
+      postalCode: 'M5B 1T8'
+    },
+    createdAt: '2026-07-25T10:00:00Z',
+    featured: true,
+    viewsCount: 142
+  },
+  {
+    id: 'prod_12',
+    sellerId: 'user_2',
+    sellerUsername: 'Sophia_Vintage',
+    title: 'Donation: Box of Children Story Books & STEM Learning Toys',
+    description: 'Clean, gently used childrens picture books and interactive puzzle blocks. Free donation for families, schools, or community centers.',
+    price: 0,
+    category: 'Toys & Hobbies',
+    condition: 'Like New',
+    listingType: 'Free / Donation',
+    isFree: true,
+    imageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800',
+    location: {
+      country: 'United States',
+      province: 'California',
+      city: 'Los Angeles',
+      address: '742 Evergreen Terrace',
+      postalCode: '90210'
+    },
+    createdAt: '2026-07-26T14:20:00Z',
+    featured: true,
+    viewsCount: 230
+  },
+  {
+    id: 'prod_13',
+    sellerId: 'user_3',
+    sellerUsername: 'Liam_Audio',
+    title: 'Free Heirloom Organic Garden Seeds & Seedling Starter Trays',
+    description: 'Extra non-GMO organic tomato, cucumber, and basil seeds from our spring harvest. Free to any urban gardener or community farm enthusiast!',
+    price: 0,
+    category: 'Garden & Outdoors',
+    condition: 'New',
+    listingType: 'Free / Donation',
+    isFree: true,
+    imageUrl: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&q=80&w=800',
+    location: {
+      country: 'United Kingdom',
+      province: 'Greater London',
+      city: 'London',
+      address: '221B Baker Street',
+      postalCode: 'NW1 6XE'
+    },
+    createdAt: '2026-07-26T18:45:00Z',
+    featured: false,
+    viewsCount: 88
+  },
+  {
+    id: 'prod_14',
+    sellerId: 'user_4',
+    sellerUsername: 'Elena_Kicks',
+    title: 'Donation: Wooden Beginner Acoustic Guitar (Needs Strings)',
+    description: 'Beautiful warm wooden acoustic guitar. Body is in solid condition with minor surface wear, just needs a fresh set of strings. Free for music students!',
+    price: 0,
+    category: 'Musical Instruments',
+    condition: 'Good',
+    listingType: 'Free / Donation',
+    isFree: true,
+    imageUrl: 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&q=80&w=800',
+    location: {
+      country: 'Germany',
+      province: 'Bavaria',
+      city: 'Munich',
+      address: 'Leopoldstraße 42',
+      postalCode: '80802'
+    },
+    createdAt: '2026-07-27T09:10:00Z',
+    featured: true,
+    viewsCount: 175
   }
 ];
 

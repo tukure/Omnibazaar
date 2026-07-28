@@ -27,6 +27,7 @@ import { AuthModal } from './components/AuthModal';
 import { MessagesInbox } from './components/MessagesInbox';
 import { UserProfileModal } from './components/UserProfileModal';
 import { TradeHubView } from './components/TradeHubView';
+import { FreeSectionView } from './components/FreeSectionView';
 import { SupabaseStatusModal } from './components/SupabaseStatusModal';
 
 import { 
@@ -136,7 +137,8 @@ export default function App() {
     const matchesCountry = filterCountry === 'All' || p.location.country === filterCountry;
     const matchesType = filterListingType === 'All' || 
       (filterListingType === 'Trade' && (p.listingType === 'Sale & Trade' || p.listingType === 'Trade Only')) ||
-      (filterListingType === 'Sale' && (p.listingType === 'Sale & Trade' || p.listingType === 'Sale Only'));
+      (filterListingType === 'Sale' && (p.listingType === 'Sale & Trade' || p.listingType === 'Sale Only')) ||
+      (filterListingType === 'Free' && (p.listingType === 'Free / Donation' || p.price === 0));
 
     const queryLower = searchQuery.toLowerCase().trim();
     const matchesQuery = !queryLower ||
@@ -233,6 +235,14 @@ export default function App() {
                     >
                       Buy Only
                     </button>
+                    <button
+                      onClick={() => setFilterListingType('Free')}
+                      className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                        filterListingType === 'Free' ? 'bg-[#064E3B] border border-[#10B981]/50 text-[#34D399] font-bold' : 'text-[#888888] hover:text-[#34D399]'
+                      }`}
+                    >
+                      🎁 Free / Donations
+                    </button>
                   </div>
 
                   <div className="flex items-center gap-1 bg-[#111111] p-1 border border-[#222222] rounded-xl">
@@ -308,6 +318,20 @@ export default function App() {
               if (!currentUser) setIsAuthModalOpen(true);
               else setIsCreateProductOpen(true);
             }}
+          />
+        )}
+
+        {activeTab === 'free' && (
+          <FreeSectionView
+            products={products}
+            currentUser={currentUser}
+            onViewDetail={setDetailProduct}
+            onOpenCreateProduct={() => {
+              if (!currentUser) setIsAuthModalOpen(true);
+              else setIsCreateProductOpen(true);
+            }}
+            onOpenAuth={() => setIsAuthModalOpen(true)}
+            onRefreshData={refreshAppData}
           />
         )}
 

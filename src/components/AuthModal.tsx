@@ -29,6 +29,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   // Compulsory location fields for sign up
   const [country, setCountry] = useState('Canada');
   const [province, setProvince] = useState('');
+  const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
   const [postalCode, setPostalCode] = useState('');
 
@@ -74,6 +75,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setError('Province/State is required');
       return;
     }
+    if (!city.trim()) {
+      setError('City is required');
+      return;
+    }
     if (!address.trim()) {
       setError('Address is required');
       return;
@@ -86,6 +91,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     const location: LocationInfo = {
       country: country.trim(),
       province: province.trim(),
+      city: city.trim(),
       address: address.trim(),
       postalCode: postalCode.trim()
     };
@@ -229,7 +235,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 Location & Delivery Info (Required for Trading)
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">
                     Country <span className="text-red-400">*</span>
@@ -260,6 +266,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={province}
                       onChange={(e) => setProvince(e.target.value)}
                       placeholder="e.g. Ontario or California"
+                      className="w-full pl-9 pr-3 py-2 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">
+                    City <span className="text-red-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <Building2 className="w-4 h-4 absolute left-3 top-3 text-[#555555]" />
+                    <input
+                      type="text"
+                      required
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="e.g. Toronto or Los Angeles"
                       className="w-full pl-9 pr-3 py-2 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B]"
                     />
                   </div>

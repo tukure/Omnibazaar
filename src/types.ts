@@ -1,6 +1,7 @@
 export interface LocationInfo {
   country: string;
   province: string;
+  city?: string;
   address: string;
   postalCode: string;
 }
@@ -19,7 +20,7 @@ export interface User {
 
 export type ProductCondition = 'New' | 'Like New' | 'Good' | 'Fair';
 
-export type ListingType = 'Sale & Trade' | 'Sale Only' | 'Trade Only';
+export type ListingType = 'Sale & Trade' | 'Sale Only' | 'Trade Only' | 'Free / Donation';
 
 export interface Product {
   id: string;
@@ -37,6 +38,8 @@ export interface Product {
   createdAt: string;
   isSold?: boolean;
   isTraded?: boolean;
+  isFree?: boolean;
+  isClaimed?: boolean;
   featured?: boolean;
   viewsCount?: number;
 }
@@ -83,4 +86,4 @@ export interface Message {
   isSystemNotification?: boolean;
 }
 
-export type ActiveTab = 'explore' | 'my-listings' | 'trades' | 'messages' | 'profile';
+export type ActiveTab = 'explore' | 'free' | 'my-listings' | 'trades' | 'messages' | 'profile';

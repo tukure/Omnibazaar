@@ -1,6 +1,6 @@
 import React from 'react';
 import { Product } from '../types';
-import { Repeat, MapPin, Tag, Eye, ArrowUpRight } from 'lucide-react';
+import { Repeat, MapPin, Tag, Eye, ArrowUpRight, Gift } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -32,19 +32,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Listing Type Badge */}
         <div className="absolute top-3 left-3 flex flex-col gap-1">
-          {product.listingType === 'Sale & Trade' && (
+          {(product.listingType === 'Free / Donation' || product.price === 0) ? (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#064E3B] border border-[#10B981]/50 text-[#34D399] rounded-full text-[10px] font-bold shadow-md">
+              <Gift className="w-3 h-3 text-[#34D399]" />
+              <span>FREE / DONATION</span>
+            </span>
+          ) : product.listingType === 'Sale & Trade' ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#21303E] border border-[#3A506B] text-white rounded-full text-[10px] font-bold shadow-md">
               <Repeat className="w-3 h-3 text-[#93ACCC]" />
               <span>For Sale & Trade</span>
             </span>
-          )}
-          {product.listingType === 'Trade Only' && (
+          ) : product.listingType === 'Trade Only' ? (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#182533] border border-[#2D4158] text-[#93ACCC] rounded-full text-[10px] font-bold shadow-md">
               <Repeat className="w-3 h-3 text-[#93ACCC]" />
               <span>Trade Only</span>
             </span>
-          )}
-          {product.listingType === 'Sale Only' && (
+          ) : (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#1A1A1A] border border-[#333333] text-white rounded-full text-[10px] font-bold shadow-md">
               <Tag className="w-3 h-3 text-[#93ACCC]" />
               <span>For Sale Only</span>
@@ -91,10 +94,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           {/* Price */}
           <div className="mt-2.5 flex items-baseline gap-1.5">
-            <span className="text-xl font-bold text-white">
-              ${product.price}
-            </span>
-            <span className="text-[10px] text-[#555555] uppercase tracking-widest">USD</span>
+            {(product.listingType === 'Free / Donation' || product.price === 0) ? (
+              <span className="text-xl font-black text-[#34D399] tracking-tight flex items-center gap-1">
+                <Gift className="w-4 h-4 text-[#34D399]" />
+                FREE
+              </span>
+            ) : (
+              <>
+                <span className="text-xl font-bold text-white">
+                  ${product.price}
+                </span>
+                <span className="text-[10px] text-[#555555] uppercase tracking-widest">USD</span>
+              </>
+            )}
           </div>
 
           {/* Location details (Country, Province, Postal Code) */}
@@ -102,7 +114,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <div className="flex items-center gap-1.5 truncate max-w-[200px]">
               <MapPin className="w-3 h-3 text-[#93ACCC] shrink-0" />
               <span className="truncate font-normal">
-                {product.location.province}, {product.location.country} ({product.location.postalCode})
+                {product.location.city ? `${product.location.city}, ` : ''}{product.location.province}, {product.location.country} ({product.location.postalCode})
               </span>
             </div>
             <span className="text-[10px] font-mono text-[#555555] shrink-0">@{product.sellerUsername}</span>

@@ -13,7 +13,8 @@ import {
   Package, 
   LogOut,
   ChevronDown,
-  Database
+  Database,
+  Gift
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -94,6 +95,19 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <Repeat className="w-3.5 h-3.5 text-[#93ACCC]" />
                 <span>Trade Hub</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('free')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                  activeTab === 'free'
+                    ? 'bg-[#064E3B] border border-[#10B981]/50 text-[#34D399] font-extrabold shadow-sm'
+                    : 'text-[#888888] hover:text-white'
+                }`}
+              >
+                <Gift className="w-3.5 h-3.5 text-[#34D399]" />
+                <span>Free Hub</span>
+                <span className="px-1.5 py-0.5 bg-[#10B981]/20 text-[#34D399] text-[9px] font-black rounded-md">FREE</span>
               </button>
 
               <button

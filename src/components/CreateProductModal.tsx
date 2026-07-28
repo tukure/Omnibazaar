@@ -50,6 +50,7 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
   // Location pre-filled from user profile
   const [country, setCountry] = useState(currentUser.location.country);
   const [province, setProvince] = useState(currentUser.location.province);
+  const [city, setCity] = useState(currentUser.location.city || '');
   const [address, setAddress] = useState(currentUser.location.address);
   const [postalCode, setPostalCode] = useState(currentUser.location.postalCode);
 
@@ -84,14 +85,15 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
       setError('Please upload a product picture or select a preset photo.');
       return;
     }
-    if (!country.trim() || !province.trim() || !address.trim() || !postalCode.trim()) {
-      setError('All location fields (Country, Province, Address, Postal Code) are required.');
+    if (!country.trim() || !province.trim() || !city.trim() || !address.trim() || !postalCode.trim()) {
+      setError('All location fields (Country, Province, City, Address, Postal Code) are required.');
       return;
     }
 
     const location: LocationInfo = {
       country: country.trim(),
       province: province.trim(),
+      city: city.trim(),
       address: address.trim(),
       postalCode: postalCode.trim()
     };
@@ -200,11 +202,19 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
                 <DollarSign className="w-4 h-4 absolute left-3 top-2.5 text-[#555555]" />
                 <input
                   type="number"
-                  value={price}
+                  disabled={listingType === 'Free / Donation'}
+                  value={listingType === 'Free / Donation' ? 0 : price}
                   onChange={(e) => setPrice(Number(e.target.value))}
-                  className="w-full pl-9 pr-3 py-2 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B]"
+                  className={`w-full pl-9 pr-3 py-2 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B] ${
+                    listingType === 'Free / Donation' ? 'text-[#34D399] font-bold cursor-not-allowed opacity-80' : ''
+                  }`}
                 />
               </div>
+              {listingType === 'Free / Donation' && (
+                <p className="text-[10px] text-[#34D399] mt-1 font-semibold">
+                  🎁 Free giveaway ($0.00)
+                </p>
+              )}
             </div>
 
             <div>
@@ -229,12 +239,19 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
               </label>
               <select
                 value={listingType}
-                onChange={(e) => setListingType(e.target.value as ListingType)}
+                onChange={(e) => {
+                  const val = e.target.value as ListingType;
+                  setListingType(val);
+                  if (val === 'Free / Donation') {
+                    setPrice(0);
+                  }
+                }}
                 className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs font-bold text-white focus:outline-none focus:border-[#3A506B]"
               >
                 <option value="Sale & Trade" className="bg-[#111111] text-white">For Sale & Trade</option>
                 <option value="Trade Only" className="bg-[#111111] text-white">Trade Only</option>
                 <option value="Sale Only" className="bg-[#111111] text-white">Sale Only</option>
+                <option value="Free / Donation" className="bg-[#111111] text-[#34D399] font-bold">🎁 Free / Donation ($0)</option>
               </select>
             </div>
           </div>
@@ -296,7 +313,7 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
               Item Shipping Location
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
                 <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">Country</label>
                 <input
@@ -315,6 +332,17 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
                   required
                   value={province}
                   onChange={(e) => setProvince(e.target.value)}
+                  className="w-full px-3 py-1.5 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">City</label>
+                <input
+                  type="text"
+                  required
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
                   className="w-full px-3 py-1.5 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B]"
                 />
               </div>

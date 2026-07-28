@@ -32,7 +32,9 @@ export const TradeHubView: React.FC<TradeHubViewProps> = ({
     const matchesQuery = !searchQuery.trim() || 
       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.category.toLowerCase().includes(searchQuery.toLowerCase());
+      p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.location.city && p.location.city.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      p.location.province.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCountry && matchesQuery;
   });
 

@@ -33,6 +33,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 }) => {
   const [country, setCountry] = useState(currentUser.location.country);
   const [province, setProvince] = useState(currentUser.location.province);
+  const [city, setCity] = useState(currentUser.location.city || '');
   const [address, setAddress] = useState(currentUser.location.address);
   const [postalCode, setPostalCode] = useState(currentUser.location.postalCode);
   const [avatarUrl, setAvatarUrl] = useState(currentUser.avatarUrl || '');
@@ -44,6 +45,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     const updatedLoc: LocationInfo = {
       country: country.trim(),
       province: province.trim(),
+      city: city.trim(),
       address: address.trim(),
       postalCode: postalCode.trim()
     };
@@ -86,7 +88,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
             <p className="text-xs text-[#888888] mt-1 flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5 text-[#93ACCC]" />
-              {currentUser.location.province}, {currentUser.location.country} ({currentUser.location.postalCode})
+              {currentUser.location.city ? `${currentUser.location.city}, ` : ''}{currentUser.location.province}, {currentUser.location.country} ({currentUser.location.postalCode})
             </p>
 
             <div className="flex items-center gap-4 mt-2 text-xs text-[#666666]">
@@ -151,6 +153,19 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   required
                   value={province}
                   onChange={(e) => setProvince(e.target.value)}
+                  className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">
+                  City
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
                   className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B]"
                 />
               </div>
