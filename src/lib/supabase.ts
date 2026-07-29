@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 function getValidSupabaseUrl(rawUrl?: string): string {
   const fallback = 'https://qulfvekxkttplcmtanwo.supabase.co';
@@ -32,17 +32,83 @@ function getValidSupabaseAnonKey(rawKey?: string): string {
   return cleaned;
 }
 
-export const SUPABASE_URL = getValidSupabaseUrl(import.meta.env.VITE_SUPABASE_URL);
-export const SUPABASE_ANON_KEY = getValidSupabaseAnonKey(import.meta.env.VITE_SUPABASE_ANON_KEY);
-export const SUPABASE_PROJECT_ID = 'qulfvekxkttplcmtanwo';
+export function getStoredSupabaseUrl(): string {
+  const custom = typeof localStorage !== 'undefined' ? localStorage.getItem('OMNI_SUPABASE_URL') : null;
+  return getValidSupabaseUrl(custom || import.meta.env.VITE_SUPABASE_URL);
+}
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+export function getStoredSupabaseAnonKey(): string {
+  const custom = typeof localStorage !== 'undefined' ? localStorage.getItem('OMNI_SUPABASE_KEY') : null;
+  return getValidSupabaseAnonKey(custom || import.meta.env.VITE_SUPABASE_ANON_KEY);
+}
+
+export function getSupabaseProjectId(): string {
+  const url = getStoredSupabaseUrl();
+  try {
+    const host = new URL(url).hostname;
+    const parts = host.split('.');
+    return parts[0] || 'qulfvekxkttplcmtanwo';
+  } catch {
+    return 'qulfvekxkttplcmtanwo';
+  }
+}
+
+let activeClient: SupabaseClient = createClient(getStoredSupabaseUrl(), getStoredSupabaseAnonKey());
+
+export function updateSupabaseConfig(url: string, key: string) {
+  if (url && url.trim()) {
+    localStorage.setItem('OMNI_SUPABASE_URL', url.trim());
+  } else {
+    localStorage.removeItem('OMNI_SUPABASE_URL');
+  }
+
+  if (key && key.trim()) {
+    localStorage.setItem('OMNI_SUPABASE_KEY', key.trim());
+  } else {
+    localStorage.removeItem('OMNI_SUPABASE_KEY');
+  }
+
+  activeClient = createClient(getStoredSupabaseUrl(), getStoredSupabaseAnonKey());
+  return activeClient;
+}
+
+export function resetSupabaseConfig() {
+  localStorage.removeItem('OMNI_SUPABASE_URL');
+  localStorage.removeItem('OMNI_SUPABASE_KEY');
+  activeClient = createClient(getStoredSupabaseUrl(), getStoredSupabaseAnonKey());
+  return activeClient;
+}
+
+export const SUPABASE_URL = getStoredSupabaseUrl();
+export const SUPABASE_ANON_KEY = getStoredSupabaseAnonKey();
+export const SUPABASE_PROJECT_ID = getSupabaseProjectId();
+
+// Proxy object delegating all Supabase calls to activeClient
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    const val = (activeClient as any)[prop];
+    if (typeof val === 'function') {
+      return val.bind(activeClient);
+    }
+    return val;
+  }
+});
 
 // Helper SQL definition for users to run in Supabase SQL editor if needed
 export const SUPABASE_SQL_SCHEMA = `
--- Run this in your Supabase SQL Editor if tables are not yet created:
+-- =========================================================================
+-- OMNIBAZAAR COMPLETE SUPABASE DATABASE SETUP & REPAIR SCRIPT
+-- Copy ALL lines below, paste into your Supabase SQL Editor, and click "Run".
+-- =========================================================================
 
-CREATE TABLE IF NOT EXISTS users (
+-- STEP 1: CLEANUP PREVIOUS TABLES (PREVENTS COLUMN MISMATCH ERRORS)
+DROP TABLE IF EXISTS public.messages CASCADE;
+DROP TABLE IF EXISTS public.trade_offers CASCADE;
+DROP TABLE IF EXISTS public.products CASCADE;
+DROP TABLE IF EXISTS public.users CASCADE;
+
+-- STEP 2: CREATE USERS TABLE
+CREATE TABLE public.users (
   id TEXT PRIMARY KEY,
   username TEXT UNIQUE NOT NULL,
   password TEXT,
@@ -54,7 +120,8 @@ CREATE TABLE IF NOT EXISTS users (
   trades_completed INT DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS products (
+-- STEP 3: CREATE PRODUCTS TABLE
+CREATE TABLE public.products (
   id TEXT PRIMARY KEY,
   seller_id TEXT,
   seller_username TEXT,
@@ -74,7 +141,8 @@ CREATE TABLE IF NOT EXISTS products (
   views_count INT DEFAULT 1
 );
 
-CREATE TABLE IF NOT EXISTS trade_offers (
+-- STEP 4: CREATE TRADE OFFERS TABLE
+CREATE TABLE public.trade_offers (
   id TEXT PRIMARY KEY,
   sender_id TEXT,
   sender_username TEXT,
@@ -90,7 +158,8 @@ CREATE TABLE IF NOT EXISTS trade_offers (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS messages (
+-- STEP 5: CREATE MESSAGES TABLE
+CREATE TABLE public.messages (
   id TEXT PRIMARY KEY,
   conversation_id TEXT,
   sender_id TEXT,
@@ -105,14 +174,25 @@ CREATE TABLE IF NOT EXISTS messages (
   is_system_notification BOOLEAN DEFAULT FALSE
 );
 
--- Enable RLS and public access policies
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE trade_offers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+-- STEP 6: GRANT TABLE ACCESS TO ANON, AUTHENTICATED & SERVICE_ROLE
+GRANT ALL ON TABLE public.users TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.products TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.trade_offers TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.messages TO anon, authenticated, service_role;
 
-CREATE POLICY "Public read/write users" ON users FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public read/write products" ON products FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public read/write trade_offers" ON trade_offers FOR ALL USING (true) WITH CHECK (true);
-CREATE POLICY "Public read/write messages" ON messages FOR ALL USING (true) WITH CHECK (true);
+-- STEP 7: ENABLE ROW LEVEL SECURITY & SET UNRESTRICTED ACCESS POLICIES
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.trade_offers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read/write users" ON public.users;
+DROP POLICY IF EXISTS "Public read/write products" ON public.products;
+DROP POLICY IF EXISTS "Public read/write trade_offers" ON public.trade_offers;
+DROP POLICY IF EXISTS "Public read/write messages" ON public.messages;
+
+CREATE POLICY "Public read/write users" ON public.users FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read/write products" ON public.products FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read/write trade_offers" ON public.trade_offers FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public read/write messages" ON public.messages FOR ALL USING (true) WITH CHECK (true);
 `.trim();

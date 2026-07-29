@@ -80,8 +80,7 @@ export const FreeSectionView: React.FC<FreeSectionViewProps> = ({
       recipientId: claimingProduct.sellerId,
       recipientUsername: claimingProduct.sellerUsername,
       productId: claimingProduct.id,
-      text: `🎁 [FREE DONATION REQUEST] ${claimNote}`,
-      read: false
+      text: `🎁 [FREE DONATION REQUEST] ${claimNote}`
     });
 
     setTimeout(() => {

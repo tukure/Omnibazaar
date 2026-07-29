@@ -37,7 +37,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           {/* Left Column: Headline & Action */}
           <div className="lg:col-span-7">
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-[#182533] border border-[#2D4158] text-[#93ACCC] rounded-full text-xs font-bold mb-4 animate-in fade-in slide-in-from-bottom-2 shadow-sm">
-              <Sparkles className="w-3.5 h-3.5 text-[#38BDF8]" />
               <span className="uppercase tracking-widest text-[10px] text-white">OmniBazaar P2P Barter & Direct Trading Network</span>
             </div>
 

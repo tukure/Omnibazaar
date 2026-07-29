@@ -39,63 +39,113 @@ export async function syncWithSupabase(): Promise<{
     initStorage();
     
     // Check connection first
-    const isConnected = await SupabaseService.checkConnection();
-    if (!isConnected) {
-      return { connected: false, error: 'Could not connect to Supabase database. Check table schema or RLS policies.' };
+    const connCheck = await SupabaseService.checkConnection();
+    if (!connCheck.ok) {
+      return { 
+        connected: false, 
+        error: connCheck.error || 'Could not connect to Supabase database. RLS policies or tables may be missing.' 
+      };
     }
 
     // Try seed initial mock data to Supabase if tables are newly created
-    await SupabaseService.seedInitialDataIfNeeded();
+    const seedRes = await SupabaseService.seedInitialDataIfNeeded();
+    if (!seedRes.success && seedRes.error) {
+      console.warn('Seed warning:', seedRes.error);
+    }
 
     // Fetch remote records from Supabase
-    const remoteUsers = await SupabaseService.fetchUsers();
-    const remoteProducts = await SupabaseService.fetchProducts();
-    const remoteOffers = await SupabaseService.fetchTradeOffers();
-    const remoteMessages = await SupabaseService.fetchMessages();
+    const userRes = await SupabaseService.fetchUsers();
+    if (userRes.error) {
+      return { connected: false, error: `Failed fetching users: ${userRes.error}` };
+    }
+
+    const prodRes = await SupabaseService.fetchProducts();
+    if (prodRes.error) {
+      return { connected: false, error: `Failed fetching products: ${prodRes.error}` };
+    }
+
+    const offerRes = await SupabaseService.fetchTradeOffers();
+    if (offerRes.error) {
+      return { connected: false, error: `Failed fetching trade offers: ${offerRes.error}` };
+    }
+
+    const msgRes = await SupabaseService.fetchMessages();
+    if (msgRes.error) {
+      return { connected: false, error: `Failed fetching messages: ${msgRes.error}` };
+    }
+
+    const remoteUsers = userRes.data;
+    const remoteProducts = prodRes.data;
+    const remoteOffers = offerRes.data;
+    const remoteMessages = msgRes.data;
 
     // Merge or update local storage with Supabase remote state
     if (remoteUsers && remoteUsers.length > 0) {
       localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(remoteUsers));
+    } else {
+      const localUsers = getUsers();
+      for (const u of localUsers) {
+        const res = await SupabaseService.saveUser(u);
+        if (!res.success) {
+          return { connected: false, error: `Failed saving user (${u.username}): ${res.error}` };
+        }
+      }
     }
+
     if (remoteProducts && remoteProducts.length > 0) {
       const remoteIds = new Set(remoteProducts.map(p => p.id));
       const missingInitial = INITIAL_PRODUCTS.filter(p => !remoteIds.has(p.id));
       const mergedProducts = [...remoteProducts, ...missingInitial];
       localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(mergedProducts));
       
-      // Upload any missing initial products to Supabase
       for (const p of missingInitial) {
-        SupabaseService.saveProduct(p);
+        await SupabaseService.saveProduct(p);
       }
     } else {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
-      for (const p of INITIAL_PRODUCTS) {
-        SupabaseService.saveProduct(p);
+      const localProducts = getProducts();
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(localProducts));
+      for (const p of localProducts) {
+        const res = await SupabaseService.saveProduct(p);
+        if (!res.success) {
+          return { connected: false, error: `Failed saving product (${p.title}): ${res.error}` };
+        }
       }
     }
+
     if (remoteOffers && remoteOffers.length > 0) {
       localStorage.setItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(remoteOffers));
+    } else {
+      const localOffers = getTradeOffers();
+      for (const o of localOffers) {
+        await SupabaseService.saveTradeOffer(o);
+      }
     }
+
     if (remoteMessages && remoteMessages.length > 0) {
       localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(remoteMessages));
+    } else {
+      const localMsgs = getMessages();
+      for (const m of localMsgs) {
+        await SupabaseService.saveMessage(m);
+      }
     }
 
-    // Sync any local users or products that might not be in Supabase yet
-    const localUsers = getUsers();
-    for (const u of localUsers) {
-      SupabaseService.saveUser(u);
+    // Ensure all current local users and products exist in Supabase
+    const currentLocalUsers = getUsers();
+    for (const u of currentLocalUsers) {
+      await SupabaseService.saveUser(u);
     }
 
-    const localProducts = getProducts();
-    for (const p of localProducts) {
-      SupabaseService.saveProduct(p);
+    const currentLocalProducts = getProducts();
+    for (const p of currentLocalProducts) {
+      await SupabaseService.saveProduct(p);
     }
 
     return {
       connected: true,
       syncedCounts: {
-        users: remoteUsers?.length || localUsers.length,
-        products: remoteProducts?.length || localProducts.length,
+        users: remoteUsers?.length || currentLocalUsers.length,
+        products: remoteProducts?.length || currentLocalProducts.length,
         offers: remoteOffers?.length || getTradeOffers().length,
         messages: remoteMessages?.length || getMessages().length,
       }
