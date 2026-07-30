@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { User, ProductCondition, ListingType, LocationInfo } from '../types';
-import { addProduct } from '../utils/storage';
+import { addProduct, getCurrentUser } from '../utils/storage';
 import { X, Upload, MapPin, Tag, Repeat, DollarSign, Image as ImageIcon, AlertCircle } from 'lucide-react';
 
 interface CreateProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  currentUser: User;
+  currentUser: User | null;
   onProductCreated: () => void;
 }
 
@@ -133,11 +133,12 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
     };
 
     const finalImage = imageUrl || PRESET_IMAGES[0];
+    const activeUser = currentUser || getCurrentUser();
 
     try {
       addProduct({
-        sellerId: currentUser.id,
-        sellerUsername: currentUser.username,
+        sellerId: activeUser?.id || 'guest_user',
+        sellerUsername: activeUser?.username || 'Trader',
         title: title.trim(),
         description: description.trim(),
         price: Number(price) || 0,

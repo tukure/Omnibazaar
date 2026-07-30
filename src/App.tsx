@@ -40,7 +40,8 @@ import {
   Package, 
   CheckCircle2, 
   Search,
-  Filter
+  Filter,
+  PlusCircle
 } from 'lucide-react';
 
 export default function App() {
@@ -477,6 +478,16 @@ export default function App() {
         </div>
       </footer>
 
+      {/* Mobile Floating Action Button (FAB) for Posting */}
+      <button
+        onClick={handleOpenCreateProduct}
+        className="sm:hidden fixed bottom-6 right-5 z-40 flex items-center gap-2 px-4 py-3 bg-[#21303E] hover:bg-[#2C3E52] active:scale-95 border border-[#3A506B] text-white rounded-full font-bold text-xs shadow-2xl transition-all"
+        title="Post Item to Marketplace"
+      >
+        <PlusCircle className="w-5 h-5 text-[#38BDF8]" />
+        <span>Post Item</span>
+      </button>
+
       {/* MODALS */}
       <AuthModal
         isOpen={isAuthModalOpen}
@@ -495,14 +506,12 @@ export default function App() {
         initialMode={authInitialMode}
       />
 
-      {currentUser && (
-        <CreateProductModal
-          isOpen={isCreateProductOpen}
-          onClose={() => setIsCreateProductOpen(false)}
-          currentUser={currentUser}
-          onProductCreated={handleProductCreated}
-        />
-      )}
+      <CreateProductModal
+        isOpen={isCreateProductOpen}
+        onClose={() => setIsCreateProductOpen(false)}
+        currentUser={currentUser || getCurrentUser()}
+        onProductCreated={handleProductCreated}
+      />
 
       <ProductDetailModal
         isOpen={!!detailProduct}
