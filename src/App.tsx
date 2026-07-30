@@ -60,8 +60,28 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authInitialMode, setAuthInitialMode] = useState<'signin' | 'signup'>('signup');
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
+  const [pendingOpenCreateProduct, setPendingOpenCreateProduct] = useState(false);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
   const [tradeTargetProduct, setTradeTargetProduct] = useState<Product | null>(null);
+
+  const handleOpenCreateProduct = () => {
+    if (!currentUser) {
+      setPendingOpenCreateProduct(true);
+      setAuthInitialMode('signup');
+      setIsAuthModalOpen(true);
+    } else {
+      setIsCreateProductOpen(true);
+    }
+  };
+
+  const handleProductCreated = () => {
+    refreshAppData();
+    setSelectedCategory('All');
+    setSearchQuery('');
+    setFilterCountry('All');
+    setFilterListingType('All');
+    setActiveTab('explore');
+  };
 
   // Supabase State
   const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
@@ -169,7 +189,7 @@ export default function App() {
           setAuthInitialMode('signup');
           setIsAuthModalOpen(true);
         }}
-        onOpenCreateProduct={() => setIsCreateProductOpen(true)}
+        onOpenCreateProduct={handleOpenCreateProduct}
         unreadCount={unreadMessagesCount}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -184,10 +204,7 @@ export default function App() {
           <div>
             {/* Hero Section */}
             <HeroBanner
-              onOpenCreateProduct={() => {
-                if (!currentUser) setIsAuthModalOpen(true);
-                else setIsCreateProductOpen(true);
-              }}
+              onOpenCreateProduct={handleOpenCreateProduct}
               onSelectCategory={setSelectedCategory}
               selectedCategory={selectedCategory}
               onNavigateToFree={() => setActiveTab('free')}
@@ -315,10 +332,7 @@ export default function App() {
               if (!currentUser) setIsAuthModalOpen(true);
               else setTradeTargetProduct(prod);
             }}
-            onOpenCreateProduct={() => {
-              if (!currentUser) setIsAuthModalOpen(true);
-              else setIsCreateProductOpen(true);
-            }}
+            onOpenCreateProduct={handleOpenCreateProduct}
           />
         )}
 
@@ -327,10 +341,7 @@ export default function App() {
             products={products}
             currentUser={currentUser}
             onViewDetail={setDetailProduct}
-            onOpenCreateProduct={() => {
-              if (!currentUser) setIsAuthModalOpen(true);
-              else setIsCreateProductOpen(true);
-            }}
+            onOpenCreateProduct={handleOpenCreateProduct}
             onOpenAuth={() => setIsAuthModalOpen(true)}
             onRefreshData={refreshAppData}
           />
@@ -469,10 +480,17 @@ export default function App() {
       {/* MODALS */}
       <AuthModal
         isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
+        onClose={() => {
+          setIsAuthModalOpen(false);
+          setPendingOpenCreateProduct(false);
+        }}
         onAuthSuccess={(user) => {
           setCurrentUserParams(user);
           refreshAppData();
+          if (pendingOpenCreateProduct) {
+            setPendingOpenCreateProduct(false);
+            setIsCreateProductOpen(true);
+          }
         }}
         initialMode={authInitialMode}
       />
@@ -482,7 +500,7 @@ export default function App() {
           isOpen={isCreateProductOpen}
           onClose={() => setIsCreateProductOpen(false)}
           currentUser={currentUser}
-          onProductCreated={refreshAppData}
+          onProductCreated={handleProductCreated}
         />
       )}
 

@@ -10,22 +10,71 @@ const STORAGE_KEYS = {
   MESSAGES: 'omnibazaar_messages',
 };
 
+// Safe wrapper for localStorage.setItem to gracefully handle QuotaExceededError
+export function safeSetItem(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value);
+  } catch (err: any) {
+    console.warn(`localStorage.setItem quota warning for key "${key}":`, err);
+    if (
+      err?.name === 'QuotaExceededError' ||
+      err?.code === 22 ||
+      err?.code === 1014 ||
+      err?.message?.includes('exceeded the quota') ||
+      err?.message?.includes('QuotaExceededError')
+    ) {
+      try {
+        if (key === STORAGE_KEYS.PRODUCTS) {
+          const products: Product[] = JSON.parse(value);
+          // Strip out large base64 image strings (> 30KB) and replace with fallback Unsplash photo
+          const sanitized = products.map(p => {
+            if (p.imageUrl && p.imageUrl.startsWith('data:image/') && p.imageUrl.length > 30000) {
+              return {
+                ...p,
+                imageUrl: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=800'
+              };
+            }
+            return p;
+          });
+          localStorage.setItem(key, JSON.stringify(sanitized));
+          return;
+        }
+
+        // Clean up older messages to free up space
+        const oldMsgs = localStorage.getItem(STORAGE_KEYS.MESSAGES);
+        if (oldMsgs) {
+          try {
+            const msgs = JSON.parse(oldMsgs);
+            if (Array.isArray(msgs) && msgs.length > 20) {
+              localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(msgs.slice(-20)));
+            }
+          } catch {}
+        }
+
+        localStorage.setItem(key, value);
+      } catch (retryErr) {
+        console.error('safeSetItem recovery failed:', retryErr);
+      }
+    }
+  }
+}
+
 // Initialize Storage if empty
 export function initStorage(): void {
   if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(INITIAL_USERS));
+    safeSetItem(STORAGE_KEYS.USERS, JSON.stringify(INITIAL_USERS));
   }
   if (!localStorage.getItem(STORAGE_KEYS.CURRENT_USER)) {
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(INITIAL_USERS[0])); // Default to Alex_Tech
+    safeSetItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(INITIAL_USERS[0])); // Default to Alex_Tech
   }
   if (!localStorage.getItem(STORAGE_KEYS.PRODUCTS)) {
-    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
+    safeSetItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
   }
   if (!localStorage.getItem(STORAGE_KEYS.TRADE_OFFERS)) {
-    localStorage.setItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(INITIAL_OFFERS));
+    safeSetItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(INITIAL_OFFERS));
   }
   if (!localStorage.getItem(STORAGE_KEYS.MESSAGES)) {
-    localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(INITIAL_MESSAGES));
+    safeSetItem(STORAGE_KEYS.MESSAGES, JSON.stringify(INITIAL_MESSAGES));
   }
 }
 
@@ -81,7 +130,7 @@ export async function syncWithSupabase(): Promise<{
 
     // Merge or update local storage with Supabase remote state
     if (remoteUsers && remoteUsers.length > 0) {
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(remoteUsers));
+      safeSetItem(STORAGE_KEYS.USERS, JSON.stringify(remoteUsers));
     } else {
       const localUsers = getUsers();
       for (const u of localUsers) {
@@ -96,14 +145,14 @@ export async function syncWithSupabase(): Promise<{
       const remoteIds = new Set(remoteProducts.map(p => p.id));
       const missingInitial = INITIAL_PRODUCTS.filter(p => !remoteIds.has(p.id));
       const mergedProducts = [...remoteProducts, ...missingInitial];
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(mergedProducts));
+      safeSetItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(mergedProducts));
       
       for (const p of missingInitial) {
         await SupabaseService.saveProduct(p);
       }
     } else {
       const localProducts = getProducts();
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(localProducts));
+      safeSetItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(localProducts));
       for (const p of localProducts) {
         const res = await SupabaseService.saveProduct(p);
         if (!res.success) {
@@ -113,7 +162,7 @@ export async function syncWithSupabase(): Promise<{
     }
 
     if (remoteOffers && remoteOffers.length > 0) {
-      localStorage.setItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(remoteOffers));
+      safeSetItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(remoteOffers));
     } else {
       const localOffers = getTradeOffers();
       for (const o of localOffers) {
@@ -122,7 +171,7 @@ export async function syncWithSupabase(): Promise<{
     }
 
     if (remoteMessages && remoteMessages.length > 0) {
-      localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(remoteMessages));
+      safeSetItem(STORAGE_KEYS.MESSAGES, JSON.stringify(remoteMessages));
     } else {
       const localMsgs = getMessages();
       for (const m of localMsgs) {
@@ -170,7 +219,7 @@ export function getCurrentUser(): User | null {
 
 export function setCurrentUser(user: User | null): void {
   if (user) {
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+    safeSetItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
   } else {
     localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
   }
@@ -202,7 +251,7 @@ export function registerUser(newUserParams: {
   };
 
   users.push(newUser);
-  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+  safeSetItem(STORAGE_KEYS.USERS, JSON.stringify(users));
   setCurrentUser(newUser);
 
   // Sync to Supabase
@@ -233,7 +282,7 @@ export function updateUserProfile(userId: string, updatedLocation: LocationInfo,
   if (idx !== -1) {
     users[idx].location = updatedLocation;
     if (avatarUrl) users[idx].avatarUrl = avatarUrl;
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+    safeSetItem(STORAGE_KEYS.USERS, JSON.stringify(users));
     
     const curr = getCurrentUser();
     if (curr && curr.id === userId) {
@@ -261,7 +310,7 @@ export function getProducts(): Product[] {
     
     if (missingInitial.length > 0) {
       const merged = [...existingProducts, ...missingInitial];
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(merged));
+      safeSetItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(merged));
       for (const p of missingInitial) {
         SupabaseService.saveProduct(p);
       }
@@ -285,7 +334,7 @@ export function addProduct(productData: Omit<Product, 'id' | 'createdAt' | 'view
   };
 
   products.unshift(newProduct);
-  localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+  safeSetItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
 
   // Sync to Supabase
   SupabaseService.saveProduct(newProduct);
@@ -295,7 +344,7 @@ export function addProduct(productData: Omit<Product, 'id' | 'createdAt' | 'view
 
 export function deleteProduct(productId: string): void {
   const products = getProducts().filter(p => p.id !== productId);
-  localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+  safeSetItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
 
   // Sync to Supabase
   SupabaseService.deleteProduct(productId);
@@ -318,7 +367,7 @@ export function createTradeOffer(offer: Omit<TradeOffer, 'id' | 'createdAt' | 's
   };
 
   offers.unshift(newOffer);
-  localStorage.setItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(offers));
+  safeSetItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(offers));
 
   // Sync to Supabase
   SupabaseService.saveTradeOffer(newOffer);
@@ -349,7 +398,7 @@ export function updateTradeOfferStatus(offerId: string, status: 'accepted' | 'de
   const idx = offers.findIndex(o => o.id === offerId);
   if (idx !== -1) {
     offers[idx].status = status;
-    localStorage.setItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(offers));
+    safeSetItem(STORAGE_KEYS.TRADE_OFFERS, JSON.stringify(offers));
 
     const offer = offers[idx];
     
@@ -390,7 +439,7 @@ export function updateTradeOfferStatus(offerId: string, status: 'accepted' | 'de
           SupabaseService.saveProduct(products[offProdIdx]);
         }
       }
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+      safeSetItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
     }
   }
 }
@@ -412,7 +461,7 @@ export function sendMessage(msg: Omit<Message, 'id' | 'createdAt' | 'read'>): Me
   };
 
   messages.push(newMessage);
-  localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
+  safeSetItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
 
   // Sync to Supabase
   SupabaseService.saveMessage(newMessage);
@@ -430,7 +479,7 @@ export function markMessagesReadForUser(userId: string): void {
     }
   });
   if (updated) {
-    localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
+    safeSetItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
     SupabaseService.markMessagesRead(userId);
   }
 }

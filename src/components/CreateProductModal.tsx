@@ -47,14 +47,16 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
   const [listingType, setListingType] = useState<ListingType>('Sale & Trade');
   const [imageUrl, setImageUrl] = useState('');
 
-  // Location pre-filled from user profile
-  const [country, setCountry] = useState(currentUser.location.country);
-  const [province, setProvince] = useState(currentUser.location.province);
-  const [city, setCity] = useState(currentUser.location.city || '');
-  const [address, setAddress] = useState(currentUser.location.address);
-  const [postalCode, setPostalCode] = useState(currentUser.location.postalCode);
+  // Location pre-filled from user profile safely
+  const [country, setCountry] = useState(currentUser?.location?.country || 'United States');
+  const [province, setProvince] = useState(currentUser?.location?.province || 'California');
+  const [city, setCity] = useState(currentUser?.location?.city || 'Los Angeles');
+  const [address, setAddress] = useState(currentUser?.location?.address || 'Central District');
+  const [postalCode, setPostalCode] = useState(currentUser?.location?.postalCode || '90001');
 
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   if (!isOpen) return null;
 
@@ -62,8 +64,42 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImageUrl(reader.result as string);
+      reader.onloadend = (event) => {
+        const rawDataUrl = event.target?.result as string;
+        if (!rawDataUrl) return;
+
+        // Compress large image data URLs using Canvas
+        const img = new Image();
+        img.onload = () => {
+          const maxWidth = 600;
+          const maxHeight = 600;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth || height > maxHeight) {
+            if (width / height > maxWidth / maxHeight) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL('image/jpeg', 0.7);
+            setImageUrl(compressed);
+          } else {
+            setImageUrl(rawDataUrl);
+          }
+        };
+        img.onerror = () => setImageUrl(rawDataUrl);
+        img.src = rawDataUrl;
       };
       reader.readAsDataURL(file);
     }
@@ -78,41 +114,51 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
       return;
     }
     if (!description.trim()) {
-      setError('Please provide a description.');
+      setError('Please provide a product description.');
       return;
     }
-    if (!imageUrl) {
-      setError('Please upload a product picture or select a preset photo.');
+    if (!country.trim() || !city.trim()) {
+      setError('Please provide at least a Country and City for the item location.');
       return;
     }
-    if (!country.trim() || !province.trim() || !city.trim() || !address.trim() || !postalCode.trim()) {
-      setError('All location fields (Country, Province, City, Address, Postal Code) are required.');
-      return;
-    }
+
+    setIsSubmitting(true);
 
     const location: LocationInfo = {
       country: country.trim(),
-      province: province.trim(),
+      province: (province || 'General').trim(),
       city: city.trim(),
-      address: address.trim(),
-      postalCode: postalCode.trim()
+      address: (address || 'Central').trim(),
+      postalCode: (postalCode || '00000').trim()
     };
 
-    addProduct({
-      sellerId: currentUser.id,
-      sellerUsername: currentUser.username,
-      title: title.trim(),
-      description: description.trim(),
-      price: Number(price) || 0,
-      category,
-      condition,
-      listingType,
-      imageUrl,
-      location
-    });
+    const finalImage = imageUrl || PRESET_IMAGES[0];
 
-    onProductCreated();
-    onClose();
+    try {
+      addProduct({
+        sellerId: currentUser.id,
+        sellerUsername: currentUser.username,
+        title: title.trim(),
+        description: description.trim(),
+        price: Number(price) || 0,
+        category,
+        condition,
+        listingType,
+        imageUrl: finalImage,
+        location
+      });
+
+      setIsSuccess(true);
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setIsSuccess(false);
+        onProductCreated();
+        onClose();
+      }, 500);
+    } catch (err: any) {
+      setIsSubmitting(false);
+      setError(err?.message || 'Failed to post product. Please try again.');
+    }
   };
 
   return (
@@ -315,7 +361,9 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">Country</label>
+                <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">
+                  Country <span className="text-red-400">*</span>
+                </label>
                 <input
                   type="text"
                   required
@@ -329,15 +377,17 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
                 <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">Province / State</label>
                 <input
                   type="text"
-                  required
                   value={province}
                   onChange={(e) => setProvince(e.target.value)}
+                  placeholder="e.g. California"
                   className="w-full px-3 py-1.5 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B]"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">City</label>
+                <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">
+                  City <span className="text-red-400">*</span>
+                </label>
                 <input
                   type="text"
                   required
@@ -348,23 +398,23 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">Street Address</label>
+                <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">Street Address (Optional)</label>
                 <input
                   type="text"
-                  required
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
+                  placeholder="e.g. 123 Market St"
                   className="w-full px-3 py-1.5 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B]"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">Postal Code / ZIP</label>
+                <label className="block text-[10px] font-bold text-[#888888] uppercase tracking-wider mb-1">Postal Code / ZIP (Optional)</label>
                 <input
                   type="text"
-                  required
                   value={postalCode}
                   onChange={(e) => setPostalCode(e.target.value)}
+                  placeholder="e.g. 90001"
                   className="w-full px-3 py-1.5 bg-[#1A1A1A] border border-[#333333] rounded-xl text-xs text-white focus:outline-none focus:border-[#3A506B]"
                 />
               </div>
@@ -373,9 +423,23 @@ export const CreateProductModal: React.FC<CreateProductModalProps> = ({
 
           <button
             type="submit"
-            className="w-full py-3.5 px-4 bg-[#21303E] hover:bg-[#2C3E52] border border-[#3A506B] text-white font-bold rounded-full transition-all text-xs sm:text-sm mt-4 shadow-md"
+            disabled={isSubmitting || isSuccess}
+            className={`w-full py-3.5 px-4 font-bold rounded-full transition-all text-xs sm:text-sm mt-4 shadow-md flex items-center justify-center gap-2 ${
+              isSuccess
+                ? 'bg-emerald-600 text-white'
+                : 'bg-[#21303E] hover:bg-[#2C3E52] border border-[#3A506B] text-white'
+            }`}
           >
-            Post Product to Marketplace
+            {isSuccess ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+                <span>Posted Successfully to Marketplace!</span>
+              </>
+            ) : isSubmitting ? (
+              <span>Publishing Item to Marketplace...</span>
+            ) : (
+              <span>Post Product to Marketplace</span>
+            )}
           </button>
         </form>
       </div>
