@@ -14,6 +14,7 @@ import {
   getTradeOffers, 
   getMessages, 
   markMessagesReadForUser,
+  getJobsServices,
   syncWithSupabase
 } from './utils/storage';
 
@@ -29,6 +30,10 @@ import { UserProfileModal } from './components/UserProfileModal';
 import { TradeHubView } from './components/TradeHubView';
 import { FreeSectionView } from './components/FreeSectionView';
 import { SupabaseStatusModal } from './components/SupabaseStatusModal';
+import { JobsServicesView } from './components/JobsServicesView';
+import { CreateJobServiceModal } from './components/CreateJobServiceModal';
+import { JobServiceDetailModal } from './components/JobServiceDetailModal';
+import { JobServiceListing } from './types';
 
 import { 
   Store, 
@@ -49,6 +54,7 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [tradeOffers, setTradeOffers] = useState<TradeOffer[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [jobsServices, setJobsServices] = useState<JobServiceListing[]>([]);
 
   // Navigation and Filter state
   const [activeTab, setActiveTab] = useState<ActiveTab>('explore');
@@ -61,6 +67,8 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authInitialMode, setAuthInitialMode] = useState<'signin' | 'signup'>('signup');
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
+  const [isCreateJobServiceOpen, setIsCreateJobServiceOpen] = useState(false);
+  const [selectedJobServiceItem, setSelectedJobServiceItem] = useState<JobServiceListing | null>(null);
   const [pendingOpenCreateProduct, setPendingOpenCreateProduct] = useState(false);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
   const [tradeTargetProduct, setTradeTargetProduct] = useState<Product | null>(null);
@@ -105,6 +113,7 @@ export default function App() {
     setProducts(getProducts());
     setTradeOffers(getTradeOffers());
     setMessages(getMessages());
+    setJobsServices(getJobsServices());
   };
 
   const handleTriggerSupabaseSync = async () => {
@@ -348,6 +357,16 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'jobs' && (
+          <JobsServicesView
+            items={jobsServices}
+            currentUser={currentUser}
+            onSelectItem={setSelectedJobServiceItem}
+            onOpenCreate={() => setIsCreateJobServiceOpen(true)}
+            onOpenAuth={() => setIsAuthModalOpen(true)}
+          />
+        )}
+
         {activeTab === 'messages' && (
           currentUser ? (
             <MessagesInbox
@@ -511,6 +530,27 @@ export default function App() {
         onClose={() => setIsCreateProductOpen(false)}
         currentUser={currentUser || getCurrentUser()}
         onProductCreated={handleProductCreated}
+      />
+
+      <CreateJobServiceModal
+        isOpen={isCreateJobServiceOpen}
+        onClose={() => setIsCreateJobServiceOpen(false)}
+        currentUser={currentUser || getCurrentUser()}
+        onCreated={() => {
+          refreshAppData();
+          setActiveTab('jobs');
+        }}
+      />
+
+      <JobServiceDetailModal
+        item={selectedJobServiceItem}
+        isOpen={!!selectedJobServiceItem}
+        onClose={() => setSelectedJobServiceItem(null)}
+        currentUser={currentUser}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+        onInquirySent={() => {
+          refreshAppData();
+        }}
       />
 
       <ProductDetailModal

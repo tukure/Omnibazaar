@@ -86,4 +86,43 @@ export interface Message {
   isSystemNotification?: boolean;
 }
 
-export type ActiveTab = 'explore' | 'free' | 'my-listings' | 'trades' | 'messages' | 'profile';
+export type ActiveTab = 'explore' | 'free' | 'jobs' | 'my-listings' | 'trades' | 'messages' | 'profile';
+
+export type JobServiceType = 'job_opening' | 'service_offered';
+
+export type JobServiceCategory = 
+  | 'Home Services & Repairs' 
+  | 'Skilled Trades & Labor' 
+  | 'Tech & Software' 
+  | 'Creative & Design' 
+  | 'Tutoring & Education' 
+  | 'Caregiving & Pets' 
+  | 'Delivery & Transport' 
+  | 'Events & Hospitality' 
+  | 'Business & Legal';
+
+export type PayType = 'Hourly' | 'Fixed Price' | 'Salary' | 'Barter / Service Trade';
+
+export interface JobServiceListing {
+  id: string;
+  posterId: string;
+  posterUsername: string;
+  posterAvatar?: string;
+  posterRating?: number;
+  type: JobServiceType;
+  title: string;
+  category: JobServiceCategory;
+  description: string;
+  requirements?: string[];
+  payRate: string;
+  payType: PayType;
+  isRemote: boolean;
+  location: LocationInfo;
+  imageUrl?: string;
+  skills: string[];
+  createdAt: string;
+  urgency?: 'Standard' | 'Urgent' | 'Flexible';
+  status: 'active' | 'filled' | 'closed';
+  applicantCount?: number;
+  viewsCount?: number;
+}

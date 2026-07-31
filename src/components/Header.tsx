@@ -13,7 +13,8 @@ import {
   Package, 
   LogOut,
   ChevronDown,
-  Gift
+  Gift,
+  Briefcase
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -94,6 +95,18 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <Repeat className="w-3.5 h-3.5 text-[#93ACCC]" />
                 <span>Trade Hub</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('jobs')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                  activeTab === 'jobs'
+                    ? 'bg-[#21303E] border border-[#3A506B] text-[#38BDF8] font-bold shadow-sm'
+                    : 'text-[#888888] hover:text-white'
+                }`}
+              >
+                <Briefcase className="w-3.5 h-3.5 text-[#38BDF8]" />
+                <span>Jobs & Services</span>
               </button>
 
               <button
@@ -291,6 +304,18 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Repeat className="w-3.5 h-3.5 text-[#93ACCC]" />
               <span>Trade Hub</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('jobs')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all whitespace-nowrap ${
+                activeTab === 'jobs'
+                  ? 'bg-[#21303E] border border-[#38BDF8] text-[#38BDF8] font-bold shadow-sm'
+                  : 'text-[#888888] hover:text-white bg-[#141414] border border-[#222222]'
+              }`}
+            >
+              <Briefcase className="w-3.5 h-3.5 text-[#38BDF8]" />
+              <span>Jobs & Services</span>
             </button>
 
             <button

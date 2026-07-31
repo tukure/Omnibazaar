@@ -1,5 +1,6 @@
-import { User, Product, TradeOffer, Message, LocationInfo } from '../types';
+import { User, Product, TradeOffer, Message, LocationInfo, JobServiceListing } from '../types';
 import { INITIAL_USERS, INITIAL_PRODUCTS, INITIAL_OFFERS, INITIAL_MESSAGES } from '../data/mockData';
+import { INITIAL_JOBS_SERVICES } from '../data/mockJobsServices';
 import { SupabaseService } from '../services/supabaseService';
 
 const STORAGE_KEYS = {
@@ -8,6 +9,7 @@ const STORAGE_KEYS = {
   PRODUCTS: 'omnibazaar_products',
   TRADE_OFFERS: 'omnibazaar_trade_offers',
   MESSAGES: 'omnibazaar_messages',
+  JOBS_SERVICES: 'omnibazaar_jobs_services',
 };
 
 // Safe wrapper for localStorage.setItem to gracefully handle QuotaExceededError
@@ -75,6 +77,9 @@ export function initStorage(): void {
   }
   if (!localStorage.getItem(STORAGE_KEYS.MESSAGES)) {
     safeSetItem(STORAGE_KEYS.MESSAGES, JSON.stringify(INITIAL_MESSAGES));
+  }
+  if (!localStorage.getItem(STORAGE_KEYS.JOBS_SERVICES)) {
+    safeSetItem(STORAGE_KEYS.JOBS_SERVICES, JSON.stringify(INITIAL_JOBS_SERVICES));
   }
 }
 
@@ -483,3 +488,41 @@ export function markMessagesReadForUser(userId: string): void {
     SupabaseService.markMessagesRead(userId);
   }
 }
+
+// Jobs & Services Storage Helpers
+export function getJobsServices(): JobServiceListing[] {
+  initStorage();
+  const data = localStorage.getItem(STORAGE_KEYS.JOBS_SERVICES);
+  return data ? JSON.parse(data) : INITIAL_JOBS_SERVICES;
+}
+
+export function addJobServiceListing(item: Omit<JobServiceListing, 'id' | 'createdAt' | 'status' | 'applicantCount' | 'viewsCount'>): JobServiceListing {
+  const items = getJobsServices();
+  const newItem: JobServiceListing = {
+    ...item,
+    id: `job_serv_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    createdAt: new Date().toISOString(),
+    status: 'active',
+    applicantCount: 0,
+    viewsCount: 1
+  };
+
+  items.unshift(newItem);
+  safeSetItem(STORAGE_KEYS.JOBS_SERVICES, JSON.stringify(items));
+  return newItem;
+}
+
+export function deleteJobServiceListing(id: string): void {
+  const items = getJobsServices().filter(i => i.id !== id);
+  safeSetItem(STORAGE_KEYS.JOBS_SERVICES, JSON.stringify(items));
+}
+
+export function updateJobServiceStatus(id: string, status: 'active' | 'filled' | 'closed'): void {
+  const items = getJobsServices();
+  const idx = items.findIndex(i => i.id === id);
+  if (idx !== -1) {
+    items[idx].status = status;
+    safeSetItem(STORAGE_KEYS.JOBS_SERVICES, JSON.stringify(items));
+  }
+}
+
